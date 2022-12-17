@@ -11,17 +11,21 @@
 void Application::Run() {
 
     Log::LogInfo("Initializing Window");
-    InitWindow(1920, 1080, "SignE");
+    InitWindow(1280, 720, "SignE");
 
     while (!WindowShouldClose()) {
+        // Update application layers
         for (ApplicationLayer* layer: layers) {
             layer->Update(GetFrameTime());
         }
 
         BeginDrawing();
-
         ClearBackground(RAYWHITE);
-        DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
+
+        // Draw application layers
+        for (ApplicationLayer* layer: layers) {
+            layer->Draw();
+        }
 
         EndDrawing();
     }

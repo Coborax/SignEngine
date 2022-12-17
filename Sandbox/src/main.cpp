@@ -4,7 +4,9 @@
 class TestLayer : public ApplicationLayer {
 public:
     void Update(float dt) override {
-        Log::LogInfo("Updating Test Layer!");
+    }
+    void Draw() override {
+        Renderer2D::DrawRect(10, 10);
     }
 };
 

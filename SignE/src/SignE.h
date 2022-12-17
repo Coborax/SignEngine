@@ -7,5 +7,6 @@
 
 #include "Application/Application.h"
 #include "Log.h"
+#include "Renderer/Renderer2D.h"
 
 #endif //SIGNEPROJECT_SIGNE_H

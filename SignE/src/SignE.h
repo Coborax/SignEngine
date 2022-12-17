@@ -5,6 +5,7 @@
 #ifndef SIGNEPROJECT_SIGNE_H
 #define SIGNEPROJECT_SIGNE_H
 
-#include "Application.h"
+#include "Application/Application.h"
+#include "Log.h"
 
 #endif //SIGNEPROJECT_SIGNE_H

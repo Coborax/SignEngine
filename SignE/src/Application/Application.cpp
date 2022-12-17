@@ -3,14 +3,21 @@
 //
 #include <iostream>
 
-#include "Application.h"
 #include "raylib.h"
+
+#include "Application.h"
+#include "Log.h"
 
 void Application::Run() {
 
+    Log::LogInfo("Initializing Window");
     InitWindow(1920, 1080, "SignE");
 
     while (!WindowShouldClose()) {
+        for (ApplicationLayer* layer: layers) {
+            layer->Update(GetFrameTime());
+        }
+
         BeginDrawing();
 
         ClearBackground(RAYWHITE);
@@ -18,4 +25,6 @@ void Application::Run() {
 
         EndDrawing();
     }
+
+    Log::LogInfo("Application Shutting Down");
 }

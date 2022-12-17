@@ -1,3 +1,6 @@
 [submodule "SignE/includes/raylib"]
 	path = SignE/includes/raylib
 	url = https://github.com/raysan5/raylib
+[submodule "SignE/includes/spdlog"]
+	path = SignE/includes/spdlog
+	url = https://github.com/gabime/spdlog

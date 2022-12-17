@@ -6,11 +6,15 @@
 #define MYPROJECT_APPLICATION_H
 
 
+#include <vector>
+#include "ApplicationLayer.h"
+
 class Application {
 public:
     void Run();
+    void PushLayer(ApplicationLayer* layer) { layers.push_back(layer); }
 private:
-    bool running;
+    std::vector<ApplicationLayer*> layers;
 };
 
 

@@ -1,0 +1,3 @@
+[submodule "SignE/includes/raylib"]
+	path = SignE/includes/raylib
+	url = https://github.com/raysan5/raylib

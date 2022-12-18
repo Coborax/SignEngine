@@ -1,22 +1,43 @@
 #include <iostream>
 #include "../../SignE/src/SignE.h"
 
-class TestLayer : public ApplicationLayer {
+class SandboxLayer : public ApplicationLayer {
 public:
-    void Update(float dt) override {
+    SandboxLayer() {
+        Name = "Sandbox Application Layer";
     }
-    void Draw() override {
-        Renderer2D::DrawRect(10, 10);
+
+    void OnInit() override {
+        ApplicationLayer::OnInit();
+
+        scene = new Scene("Sanbox Scene");
+        PushScene(scene);
+        SetActiveScene(scene);
     }
+
+    ~SandboxLayer() {
+        delete scene;
+    }
+private:
+    Scene* scene;
+};
+
+class SandboxApplication : public Application {
+public:
+    SandboxApplication() {
+        layer = new SandboxLayer();
+        PushLayer(layer);
+    }
+
+    ~SandboxApplication() {
+        delete layer;
+    }
+private:
+    ApplicationLayer* layer;
 };
 
 int main() {
-    Application* app = new Application();
-
-    TestLayer* layer = new TestLayer();
-    app->PushLayer(layer);
-
+    Application* app = new SandboxApplication();
     app->Run();
     delete app;
-    delete layer;
 }

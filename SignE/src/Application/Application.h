@@ -12,9 +12,10 @@
 class Application {
 public:
     void Run();
-    void PushLayer(ApplicationLayer* layer) { layers.push_back(layer); }
+    void PushLayer(ApplicationLayer* layer);
 private:
     std::vector<ApplicationLayer*> layers;
+    bool running = false;
 };
 
 

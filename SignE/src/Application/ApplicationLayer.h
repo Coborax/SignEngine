@@ -6,10 +6,21 @@
 #define SIGNEPROJECT_APPLICATIONLAYER_H
 
 
+#include "Scene/Scene.h"
+
 class ApplicationLayer {
 public:
-    virtual void Update(float dt) = 0;
-    virtual void Draw() = 0;
+    virtual void OnInit();
+    virtual void OnUpdate(float dt);
+    virtual void OnDraw();
+
+    void PushScene(Scene* scene) { scenes.push_back(scene); }
+    void SetActiveScene(Scene* scene);
+
+    std::string Name = "Application Layer";
+private:
+    std::vector<Scene*> scenes;
+    Scene* activeScene;
 };
 
 

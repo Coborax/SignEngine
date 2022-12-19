@@ -1,5 +1,6 @@
 #include <iostream>
 #include "../../SignE/src/SignE.h"
+#include "Application/ImGuiLayer.h"
 
 class SandboxLayer : public ApplicationLayer {
 public:
@@ -26,14 +27,18 @@ class SandboxApplication : public Application {
 public:
     SandboxApplication() {
         layer = new SandboxLayer();
+        imgui = new ImGuiLayer();
         PushLayer(layer);
+        PushLayer(imgui);
     }
 
     ~SandboxApplication() {
         delete layer;
+        delete imgui;
     }
 private:
     ApplicationLayer* layer;
+    ApplicationLayer* imgui;
 };
 
 int main() {

@@ -5,7 +5,7 @@
 #include "ApplicationLayer.h"
 
 void ApplicationLayer::OnInit() {
-    Log::LogInfo("Initializing Application Layer: " + Name);
+    Log::LogInfo("OnInit Application Layer: " + Name);
 }
 
 void ApplicationLayer::OnUpdate(float dt) {
@@ -21,4 +21,11 @@ void ApplicationLayer::OnDraw() {
 void ApplicationLayer::SetActiveScene(Scene *scene) {
     activeScene = scene;
     activeScene->OnInit();
+}
+
+void ApplicationLayer::OnShutdown() {
+    Log::LogInfo("OnShutdown Application Layer: " + Name);
+    for (Scene* scene : scenes) {
+        scene->OnShutdown();
+    }
 }

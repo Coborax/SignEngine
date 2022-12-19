@@ -7,3 +7,10 @@
 [submodule "SignE/includes/entt"]
 	path = SignE/includes/entt
 	url = https://github.com/skypjack/entt
+[submodule "SignE/includes/imgui"]
+	path = SignE/includes/imgui
+	url = https://github.com/ocornut/imgui
+	branch = docking
+[submodule "SignE/includes/rlImGui"]
+	path = SignE/includes/rlImGui
+	url = https://github.com/raylib-extras/rlImGui

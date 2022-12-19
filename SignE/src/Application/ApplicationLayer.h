@@ -13,6 +13,7 @@ public:
     virtual void OnInit();
     virtual void OnUpdate(float dt);
     virtual void OnDraw();
+    virtual void OnShutdown();
 
     void PushScene(Scene* scene) { scenes.push_back(scene); }
     void SetActiveScene(Scene* scene);

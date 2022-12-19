@@ -14,7 +14,7 @@ Scene::Scene(std::string name) {
 }
 
 void Scene::OnInit() {
-    Log::LogInfo("Initializing Scene: " + name);
+    Log::LogInfo("OnInit Scene: " + name);
 }
 
 void Scene::OnUpdate(float dt) {
@@ -23,4 +23,8 @@ void Scene::OnUpdate(float dt) {
 
 void Scene::OnDraw() {
     Renderer2D::DrawRect(10, 10);
+}
+
+void Scene::OnShutdown() {
+    Log::LogInfo("OnShutdown Scene: " + name);
 }

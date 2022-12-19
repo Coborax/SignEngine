@@ -36,7 +36,12 @@ void Application::Run() {
     }
 
     Log::LogInfo("Application Shutting Down");
+
     running = false;
+
+    for (ApplicationLayer* layer: layers) {
+        layer->OnShutdown();
+    }
 }
 
 void Application::PushLayer(ApplicationLayer *layer) {

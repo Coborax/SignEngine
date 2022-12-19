@@ -15,6 +15,7 @@ public:
     void OnInit();
     void OnUpdate(float dt);
     void OnDraw();
+    void OnShutdown();
 private:
     entt::registry registry;
     std::string name;

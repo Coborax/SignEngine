@@ -2,5 +2,10 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/SignE/includes/entt" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/SignE/includes/imgui" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/SignE/includes/raylib" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/SignE/includes/rlImGui" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/SignE/includes/spdlog" vcs="Git" />
   </component>
 </project>

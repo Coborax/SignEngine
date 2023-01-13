@@ -3,6 +3,7 @@
 //
 
 #include "ImGuiLayer.h"
+#include "Renderer/Renderer2D.h"
 
 void ImGuiLayer::OnInit() {
     ApplicationLayer::OnInit();
@@ -22,7 +23,7 @@ void ImGuiLayer::OnDraw() {
 
 void ImGuiLayer::OnShutdown() {
     ApplicationLayer::OnShutdown();
-    rlImGuiShutdown();
+    Renderer2D::CleanupImGui();
 }
 
 ImGuiLayer::ImGuiLayer() {
@@ -30,11 +31,11 @@ ImGuiLayer::ImGuiLayer() {
 }
 
 void ImGuiLayer::BeginImGui() {
-    rlImGuiBegin();
+    Renderer2D::BeginImGui();
 }
 
 void ImGuiLayer::EndImGui() {
-    rlImGuiEnd();
+    Renderer2D::EndImGui();
 }
 
 

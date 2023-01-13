@@ -23,16 +23,16 @@ private:
     Scene* scene;
 };
 
-class SandboxApplication : public Application {
+class SignEditorApplication : public Application {
 public:
-    SandboxApplication() {
+    SignEditorApplication() {
         layer = new SandboxLayer();
         imgui = new ImGuiLayer();
         PushLayer(layer);
         PushLayer(imgui);
     }
 
-    ~SandboxApplication() {
+    ~SignEditorApplication() {
         delete layer;
         delete imgui;
     }
@@ -42,7 +42,7 @@ private:
 };
 
 int main() {
-    Application* app = new SandboxApplication();
+    Application* app = new SignEditorApplication();
     app->Run();
     delete app;
 }

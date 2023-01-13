@@ -11,11 +11,16 @@
 
 class Application {
 public:
+    Application(std::string name) {
+        this->name = name;
+    }
+
     void Run();
     void PushLayer(ApplicationLayer* layer);
 private:
     std::vector<ApplicationLayer*> layers;
     bool running = false;
+    std::string name;
 };
 
 

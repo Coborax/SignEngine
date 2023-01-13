@@ -11,7 +11,7 @@
 void Application::Run() {
 
     Log::LogInfo("Initializing Window");
-    InitWindow(1280, 720, "SignE");
+    InitWindow(1280, 720, name.c_str());
 
     for (ApplicationLayer* layer: layers) {
         layer->OnInit();
@@ -24,15 +24,10 @@ void Application::Run() {
             layer->OnUpdate(GetFrameTime());
         }
 
-        BeginDrawing();
-        ClearBackground(RAYWHITE);
-
         // Draw application layers
         for (ApplicationLayer* layer: layers) {
             layer->OnDraw();
         }
-
-        EndDrawing();
     }
 
     Log::LogInfo("Application Shutting Down");
@@ -44,10 +39,10 @@ void Application::Run() {
     }
 }
 
-void Application::PushLayer(ApplicationLayer *layer) {
+void Application::PushLayer(ApplicationLayer* layer) {
     layers.push_back(layer);
 
-    // If we push a layer while the game is running we wan't to initialize it
+    // If we push a layer while the game is running we want to initialize it
     if (running) {
         layer->OnInit();
     }

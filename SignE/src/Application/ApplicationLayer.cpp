@@ -9,18 +9,21 @@ void ApplicationLayer::OnInit() {
 }
 
 void ApplicationLayer::OnUpdate(float dt) {
-    if (activeScene)
-        activeScene->OnUpdate(dt);
+    if (ActiveScene)
+        ActiveScene->OnUpdate(dt);
 }
 
 void ApplicationLayer::OnDraw() {
-    if (activeScene)
-        activeScene->OnDraw();
+    if (ActiveScene)
+        ActiveScene->OnDraw();
 }
 
-void ApplicationLayer::SetActiveScene(Scene *scene) {
-    activeScene = scene;
-    activeScene->OnInit();
+void ApplicationLayer::SetActiveScene(Scene*scene) {
+    if (std::find(scenes.begin(), scenes.end(), scene) == scenes.end())
+        scenes.push_back(scene);
+
+    ActiveScene = scene;
+    ActiveScene->OnInit();
 }
 
 void ApplicationLayer::OnShutdown() {

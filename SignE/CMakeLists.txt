@@ -8,7 +8,10 @@ add_library(SignE STATIC
         src/Scene/Scene.cpp
         src/Application/ApplicationLayer.cpp
         src/Application/ImGuiLayer.cpp
-        src/Application/ImGuiLayer.h)
+        src/Application/ImGuiLayer.h
+        src/Scene/Components.h
+        src/Scene/Entity.cpp
+        src/Scene/Entity.h)
 target_include_directories(SignE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 # Add Raylib

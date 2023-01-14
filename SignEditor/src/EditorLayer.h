@@ -7,12 +7,21 @@
 
 
 #include "Application/ImGuiLayer.h"
+#include "Scene/Entity.h"
 
 class EditorLayer : public ImGuiLayer {
 public:
     void OnInit() override;
     void OnDraw() override;
     void OnShutdown() override;
+
+    void DrawUI();
+    void DrawScene();
+private:
+    Scene editorScene;
+    Scene playScene;
+
+    Entity selectedEntity;
 };
 
 

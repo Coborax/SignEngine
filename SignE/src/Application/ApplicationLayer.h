@@ -19,9 +19,9 @@ public:
     void SetActiveScene(Scene* scene);
 
     std::string Name = "Application Layer";
+    Scene* ActiveScene;
 private:
     std::vector<Scene*> scenes;
-    Scene* activeScene;
 };
 
 

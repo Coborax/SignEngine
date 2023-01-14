@@ -19,7 +19,6 @@ public:
 
     void OnInit() override;
     void OnUpdate(float dt) override;
-    void OnDraw() override;
     void OnShutdown() override;
 };
 

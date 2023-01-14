@@ -14,13 +14,6 @@ void ImGuiLayer::OnUpdate(float dt) {
     ApplicationLayer::OnUpdate(dt);
 }
 
-void ImGuiLayer::OnDraw() {
-    BeginImGui();
-    ImGui::ShowDemoWindow();
-    ImGui::ShowAboutWindow();
-    EndImGui();
-}
-
 void ImGuiLayer::OnShutdown() {
     ApplicationLayer::OnShutdown();
     Renderer2D::CleanupImGui();

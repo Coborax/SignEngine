@@ -10,35 +10,35 @@
 #include "entt/entt.hpp"
 #include "Scene.h"
 
-class Entity {
-public:
-    Entity() = default;
-    Entity(entt::entity entityHandle, std::string tag, Scene* scene) : entityHandle(entityHandle), tag(tag), scene(scene) {};
+namespace SignE::Core::Scene {
+    class Entity {
+    public:
+        Entity() = default;
+        Entity(entt::entity entityHandle, std::string tag, Scene* scene) : entityHandle(entityHandle), tag(tag), scene(scene) {};
 
-    template<typename T, typename... Args>
-    T& AddComponent(Args&&... args) {
-        return scene->registry.emplace<T>(entityHandle, std::forward<Args>(args)...);
-    }
+        template<typename T, typename... Args>
+        T& AddComponent(Args&&... args) {
+            return scene->registry.emplace<T>(entityHandle, std::forward<Args>(args)...);
+        }
 
-    template<typename T>
-    T& GetComponent() {
-        return scene->registry.get<T>(entityHandle);
-    }
+        template<typename T>
+        T& GetComponent() {
+            return scene->registry.get<T>(entityHandle);
+        }
 
-    template<typename T>
-    bool HasComponent() {
-        return scene->registry.any_of<T>(entityHandle);
-    }
+        template<typename T>
+        bool HasComponent() {
+            return scene->registry.any_of<T>(entityHandle);
+        }
 
-    std::string GetTag() {
-        return tag;
-    }
+        std::string GetTag() {
+            return tag;
+        }
 
-private:
-    std::string tag;
-    entt::entity entityHandle;
-    Scene* scene;
-};
-
-
+    private:
+        std::string tag;
+        entt::entity entityHandle;
+        Scene* scene;
+    };
+}
 #endif //SIGNEPROJECT_ENTITY_H

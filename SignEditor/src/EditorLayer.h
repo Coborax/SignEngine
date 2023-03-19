@@ -8,21 +8,28 @@
 
 #include "Application/ImGuiLayer.h"
 #include "Scene/Entity.h"
+namespace SignE::Editor::Application {
+    using SignE::Core::Scene::Scene;
+    using SignE::Core::Scene::Entity;
+    using SignE::Core::Application::ImGuiLayer;
 
-class EditorLayer : public ImGuiLayer {
-public:
-    void OnInit() override;
-    void OnDraw() override;
-    void OnShutdown() override;
+    class EditorLayer : public ImGuiLayer {
+    public:
+        EditorLayer();
 
-    void DrawUI();
-    void DrawScene();
-private:
-    Scene editorScene;
-    Scene playScene;
+        void OnInit() override;
+        void OnDraw() override;
+        void OnShutdown() override;
 
-    Entity selectedEntity;
-};
+        void DrawUI();
+        void DrawScene();
+    private:
+        Scene editorScene;
+        Scene playScene;
+
+        Entity selectedEntity;
+    };
+}
 
 
 #endif //SIGNEPROJECT_EDITORLAYER_H

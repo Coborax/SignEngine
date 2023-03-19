@@ -8,21 +8,25 @@
 
 #include "Scene/Scene.h"
 
-class ApplicationLayer {
-public:
-    virtual void OnInit();
-    virtual void OnUpdate(float dt);
-    virtual void OnDraw();
-    virtual void OnShutdown();
 
-    void PushScene(Scene* scene) { scenes.push_back(scene); }
-    void SetActiveScene(Scene* scene);
+namespace SignE::Core::Application {
+    using SignE::Core::Scene::Scene;
 
-    std::string Name = "Application Layer";
-    Scene* ActiveScene;
-private:
-    std::vector<Scene*> scenes;
-};
+    class ApplicationLayer {
+    public:
+        virtual void OnInit();
+        virtual void OnUpdate(float dt);
+        virtual void OnDraw();
+        virtual void OnShutdown();
 
+        void PushScene(Scene* scene) { scenes.push_back(scene); }
+        void SetActiveScene(Scene* scene);
+
+        std::string Name = "Application Layer";
+        Scene* ActiveScene;
+    private:
+        std::vector<Scene*> scenes;
+    };
+}
 
 #endif //SIGNEPROJECT_APPLICATIONLAYER_H

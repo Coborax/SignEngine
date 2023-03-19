@@ -8,10 +8,9 @@
 #include <string>
 #include "spdlog/spdlog.h"
 
-class Log {
-public:
+namespace SignE::Core::Log {
     static void LogInfo(std::string msg) { spdlog::info(msg); }
     static void LogError(std::string msg) { spdlog::error(msg); }
-};
+}
 
 #endif //SIGNEPROJECT_LOG_H

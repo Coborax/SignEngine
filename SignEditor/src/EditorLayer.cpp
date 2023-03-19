@@ -7,110 +7,121 @@
 #include "Scene/Entity.h"
 #include "Scene/Components.h"
 
-void EditorLayer::OnInit() {
-    ImGuiLayer::OnInit();
-    Renderer2D::InitRenderTexture();
+namespace SignE::Editor::Application {
+    using SignE::Core::Renderer::Renderer2D;
+    using SignE::Core::Scene::RectangleRenderer;
+    using SignE::Core::Scene::Position;
+    using SignE::Core::Scene::ColorRGBA;
 
-    ImGuiIO& io = ImGui::GetIO();
-    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    void EditorLayer::OnInit() {
+        ImGuiLayer::OnInit();
+        Renderer2D::InitRenderTexture();
 
-    SetActiveScene(&editorScene);
-}
+        ImGuiIO& io = ImGui::GetIO();
+        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
-void EditorLayer::OnDraw() {
-    DrawScene();
-    DrawUI();
-}
-
-void EditorLayer::OnShutdown() {
-    ImGuiLayer::OnShutdown();
-    Renderer2D::CleanupRenderTexture();
-}
-
-void EditorLayer::DrawUI() {
-    Renderer2D::BeginDraw();
-    EditorLayer::BeginImGui();
-    ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
-
-    ImGui::Begin("Entities");
-
-    if (ImGui::BeginListBox("##EntityList", ImVec2(-FLT_MIN, ImGui::GetContentRegionAvail().y))) {
-        for (Entity entity: ActiveScene->GetAllEntities()) {
-            const bool isSelected = entity.GetTag() == selectedEntity.GetTag();
-            if (ImGui::Selectable(entity.GetTag().c_str(), isSelected))
-                selectedEntity = entity;
-
-            if (isSelected)
-                ImGui::SetItemDefaultFocus();
-        }
-
-        ImGui::EndListBox();
+        SetActiveScene(&editorScene);
     }
 
-    ImGui::End();
+    void EditorLayer::OnDraw() {
+        DrawScene();
+        DrawUI();
+    }
 
-    ImGui::Begin("Inspector");
+    void EditorLayer::OnShutdown() {
+        ImGuiLayer::OnShutdown();
+        Renderer2D::CleanupRenderTexture();
+    }
 
-    if (selectedEntity.GetTag() != "") {
-        ImGui::Text("%s", selectedEntity.GetTag().c_str());
-        ImGui::Separator();
+    void EditorLayer::DrawUI() {
+        Renderer2D::BeginDraw();
+        EditorLayer::BeginImGui();
+        ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 
-        if (ImGui::CollapsingHeader("Position", ImGuiTreeNodeFlags_DefaultOpen)) {
-            if (selectedEntity.HasComponent<Position>()) {
-                auto& pos = selectedEntity.GetComponent<Position>();
+        ImGui::Begin("Entities");
 
-                ImGui::Text("Position");
-                ImGui::DragFloat("X", &pos.x);
-                ImGui::DragFloat("Y", &pos.y);
+        if (ImGui::BeginListBox("##EntityList", ImVec2(-FLT_MIN, ImGui::GetContentRegionAvail().y))) {
+            for (Entity entity: ActiveScene->GetAllEntities()) {
+                const bool isSelected = entity.GetTag() == selectedEntity.GetTag();
+                if (ImGui::Selectable(entity.GetTag().c_str(), isSelected))
+                    selectedEntity = entity;
+
+                if (isSelected)
+                    ImGui::SetItemDefaultFocus();
             }
+
+            ImGui::EndListBox();
         }
 
-        if (ImGui::CollapsingHeader("Rectangle Renderer", ImGuiTreeNodeFlags_DefaultOpen)) {
-            if (selectedEntity.HasComponent<RectangleRenderer>()) {
-                auto& rectangleRenderer = selectedEntity.GetComponent<RectangleRenderer>();
+        ImGui::End();
 
-                ImGui::Text("Position");
-                ImGui::DragFloat("Width", &rectangleRenderer.width);
-                ImGui::DragFloat("Height", &rectangleRenderer.height);
+        ImGui::Begin("Inspector");
 
-                ImVec4* color = (ImVec4*) &rectangleRenderer.color;
-                if (ImGui::ColorButton("Color", *color))
-                    ImGui::OpenPopup("##ColorPicker");
+        if (selectedEntity.GetTag() != "") {
+            ImGui::Text("%s", selectedEntity.GetTag().c_str());
+            ImGui::Separator();
 
-                if (ImGui::BeginPopup("##ColorPicker")) {
+            if (ImGui::CollapsingHeader("Position", ImGuiTreeNodeFlags_DefaultOpen)) {
+                if (selectedEntity.HasComponent<Position>()) {
+                    auto& pos = selectedEntity.GetComponent<Position>();
 
-                    ImGui::ColorPicker4("##picker", (float*)color);
+                    ImGui::Text("Position");
+                    ImGui::DragFloat("X", &pos.x);
+                    ImGui::DragFloat("Y", &pos.y);
+                }
+            }
 
-                    ImGui::EndPopup();
+            if (ImGui::CollapsingHeader("Rectangle Renderer", ImGuiTreeNodeFlags_DefaultOpen)) {
+                if (selectedEntity.HasComponent<RectangleRenderer>()) {
+                    auto& rectangleRenderer = selectedEntity.GetComponent<RectangleRenderer>();
+
+                    ImGui::Text("Dimensions");
+                    ImGui::DragFloat("Width", &rectangleRenderer.width);
+                    ImGui::DragFloat("Height", &rectangleRenderer.height);
+
+                    ImVec4* color = (ImVec4*) &rectangleRenderer.color;
+                    ImGui::Text("Color");
+                    if (ImGui::ColorButton("Color", *color))
+                        ImGui::OpenPopup("##ColorPicker");
+
+                    if (ImGui::BeginPopup("##ColorPicker")) {
+
+                        ImGui::ColorPicker4("##picker", (float*)color);
+
+                        ImGui::EndPopup();
+                    }
                 }
             }
         }
+
+        ImGui::End();
+
+        ImGui::Begin("Asset Browser");
+        ImGui::End();
+
+        ImGui::Begin("Scene View");
+
+        // Draw Viewport
+        ImVec2 size = ImGui::GetContentRegionAvail();
+        Renderer2D::ImGuiDrawRenderTexture(size.x, size.y);
+
+        ImGui::End();
+
+        ImGui::Begin("Project Settings");
+        ImGui::End();
+
+        EditorLayer::EndImGui();
+        Renderer2D::EndDraw();
     }
 
-    ImGui::End();
+    void EditorLayer::DrawScene() {
+        Renderer2D::BeginDrawRenderTexture();
+        Renderer2D::DrawFPS();
+        ApplicationLayer::OnDraw(); // Draws Scenes
+        Renderer2D::EndDrawRenderTexture();
+    }
 
-    ImGui::Begin("Asset Browser");
-    ImGui::End();
-
-    ImGui::Begin("Scene View");
-
-    // Draw Viewport
-    ImVec2 size = ImGui::GetContentRegionAvail();
-    Renderer2D::ImGuiDrawRenderTexture(size.x, size.y);
-
-    ImGui::End();
-
-    ImGui::Begin("Project Settings");
-    ImGui::End();
-
-    EditorLayer::EndImGui();
-    Renderer2D::EndDraw();
+    EditorLayer::EditorLayer() {
+        Name = "SignEditor Layer";
+    }
 }
-
-void EditorLayer::DrawScene() {
-    Renderer2D::BeginDrawRenderTexture();
-    Renderer2D::DrawFPS();
-    ApplicationLayer::OnDraw(); // Draws Scenes
-    Renderer2D::EndDrawRenderTexture();
-}
-

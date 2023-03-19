@@ -9,19 +9,18 @@
 #include <vector>
 #include "ApplicationLayer.h"
 
-class Application {
-public:
-    Application(std::string name) {
-        this->name = name;
-    }
+namespace SignE::Core::Application {
+    class Application {
+    public:
+        Application(std::string name) : name(name) { }
 
-    void Run();
-    void PushLayer(ApplicationLayer* layer);
-private:
-    std::vector<ApplicationLayer*> layers;
-    bool running = false;
-    std::string name;
-};
-
+        void Run();
+        void PushLayer(ApplicationLayer* layer);
+    private:
+        std::vector<ApplicationLayer*> layers;
+        bool running = false;
+        std::string name;
+    };
+}
 
 #endif //MYPROJECT_APPLICATION_H

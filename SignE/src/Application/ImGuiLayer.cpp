@@ -5,30 +5,34 @@
 #include "ImGuiLayer.h"
 #include "Renderer/Renderer2D.h"
 
-void ImGuiLayer::OnInit() {
-    ApplicationLayer::OnInit();
-    rlImGuiSetup(true);
-}
+using Renderer2D = SignE::Core::Renderer::Renderer2D;
 
-void ImGuiLayer::OnUpdate(float dt) {
-    ApplicationLayer::OnUpdate(dt);
-}
+namespace SignE::Core::Application {
+    void ImGuiLayer::OnInit() {
+        ApplicationLayer::OnInit();
+        rlImGuiSetup(true);
+    }
 
-void ImGuiLayer::OnShutdown() {
-    ApplicationLayer::OnShutdown();
-    Renderer2D::CleanupImGui();
-}
+    void ImGuiLayer::OnUpdate(float dt) {
+        ApplicationLayer::OnUpdate(dt);
+    }
 
-ImGuiLayer::ImGuiLayer() {
-    Name = "ImGui Application Layer";
-}
+    void ImGuiLayer::OnShutdown() {
+        ApplicationLayer::OnShutdown();
+        Renderer2D::CleanupImGui();
+    }
 
-void ImGuiLayer::BeginImGui() {
-    Renderer2D::BeginImGui();
-}
+    ImGuiLayer::ImGuiLayer() {
+        Name = "ImGui Application Layer";
+    }
 
-void ImGuiLayer::EndImGui() {
-    Renderer2D::EndImGui();
+    void ImGuiLayer::BeginImGui() {
+        Renderer2D::BeginImGui();
+    }
+
+    void ImGuiLayer::EndImGui() {
+        Renderer2D::EndImGui();
+    }
 }
 
 

@@ -1,6 +1,5 @@
 #include <iostream>
 #include "../../SignE/src/SignE.h"
-#include "Application/ImGuiLayer.h"
 
 class SandboxLayer : public ApplicationLayer {
 public:
@@ -10,39 +9,24 @@ public:
 
     void OnInit() override {
         ApplicationLayer::OnInit();
-
-        scene = new Scene("Sanbox Scene");
-        PushScene(scene);
-        SetActiveScene(scene);
-    }
-
-    ~SandboxLayer() {
-        delete scene;
+        SetActiveScene(&scene);
     }
 private:
-    Scene* scene;
+    Scene scene;
 };
 
-class SignEditorApplication : public Application {
+class SandboxApplication : public Application {
 public:
-    SignEditorApplication() {
-        layer = new SandboxLayer();
-        imgui = new ImGuiLayer();
-        PushLayer(layer);
-        PushLayer(imgui);
+    SandboxApplication() : Application("SignE Sandbox") {
+        PushLayer(&layer);
     }
 
-    ~SignEditorApplication() {
-        delete layer;
-        delete imgui;
-    }
 private:
-    ApplicationLayer* layer;
-    ApplicationLayer* imgui;
+    SandboxLayer layer;
 };
 
 int main() {
-    Application* app = new SignEditorApplication();
+    Application* app = new SandboxApplication();
     app->Run();
     delete app;
 }

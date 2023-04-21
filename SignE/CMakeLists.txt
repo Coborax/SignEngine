@@ -11,7 +11,9 @@ add_library(SignE STATIC
         src/Application/ImGuiLayer.h
         src/Scene/Components.h
         src/Scene/Entity.cpp
-        src/Scene/Entity.h)
+        src/Scene/Entity.h
+        src/Scripting/LuaScriptEngine.cpp
+        src/Scripting/LuaScriptEngine.h)
 target_include_directories(SignE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 # Add Raylib
@@ -25,6 +27,47 @@ target_link_libraries(SignE PRIVATE spdlog)
 # Add EnTT
 add_subdirectory(includes/entt)
 target_link_libraries(SignE PRIVATE EnTT)
+
+# Set Lua source files
+# set(LUA_SOURCES
+#     includes/lua/src/lapi.c
+#     includes/lua/src/lauxlib.c
+#     includes/lua/src/lbaselib.c
+#     includes/lua/src/lcode.c
+#     includes/lua/src/ldblib.c
+#     includes/lua/src/ldebug.c
+#     includes/lua/src/ldo.c
+#     includes/lua/src/ldump.c
+#     includes/lua/src/lfunc.c
+#     includes/lua/src/lgc.c
+#     includes/lua/src/linit.c
+#     includes/lua/src/liolib.c
+#     includes/lua/src/llex.c
+#     includes/lua/src/lmathlib.c
+#     includes/lua/src/lmem.c
+#     includes/lua/src/loadlib.c
+#     includes/lua/src/lobject.c
+#     includes/lua/src/lopcodes.c
+#     includes/lua/src/loslib.c
+#     includes/lua/src/lparser.c
+#     includes/lua/src/lstate.c
+#     includes/lua/src/lstring.c
+#     includes/lua/src/lstrlib.c
+#     includes/lua/src/ltable.c
+#     includes/lua/src/ltablib.c
+#     includes/lua/src/ltm.c
+#     includes/lua/src/lundump.c
+#     includes/lua/src/lvm.c
+#     includes/lua/src/lzio.c
+# )
+# # Compile Lua as a static library
+# add_library(lua STATIC ${LUA_SOURCES})
+# target_include_directories(lua PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/includes/lua/src)
+# target_link_libraries(SignE PUBLIC lua)
+
+find_package(Lua 5.4 REQUIRED)
+include_directories(${LUA_INCLUDE_DIR})
+target_link_libraries(SignE PUBLIC ${LUA_LIBRARIES})
 
 # Add ImGui
 add_library(imgui STATIC

@@ -3,16 +3,22 @@
 //
 #include <iostream>
 
+#include "Scripting/LuaScriptEngine.h"
 #include "raylib.h"
 
 #include "Application.h"
 #include "Log.h"
 
 namespace SignE::Core::Application {
+    using namespace SignE::Core::Scripting;
+
     void Application::Run() {
 
         Log::LogInfo("Initializing Window");
         InitWindow(1280, 720, name.c_str());
+
+        Log::LogInfo("Initializing Lua Scripting Engine");
+        LuaScriptEngine::Init();
 
         for (ApplicationLayer* layer: layers) {
             layer->OnInit();
@@ -38,6 +44,9 @@ namespace SignE::Core::Application {
         for (ApplicationLayer* layer: layers) {
             layer->OnShutdown();
         }
+
+        Log::LogInfo("Shutting Down Lua Scripting Engine");
+        LuaScriptEngine::Shutdown();
     }
 
     void Application::PushLayer(ApplicationLayer* layer) {

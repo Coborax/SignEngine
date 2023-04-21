@@ -6,10 +6,12 @@
 #define MYPROJECT_APPLICATION_H
 
 
+#include "Application/ApplicationLayer.h"
 #include <vector>
-#include "ApplicationLayer.h"
 
 namespace SignE::Core::Application {
+    class ApplicationLayer;
+
     class Application {
     public:
         Application(std::string name) : name(name) { }

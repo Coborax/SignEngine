@@ -24,9 +24,7 @@ public:
 private:
     SandboxLayer layer;
 };
-
 int main() {
-    Application* app = new SandboxApplication();
+    std::unique_ptr<SignE::Core::Application::Application> app = std::make_unique<SignE::Editor::Application::SignEditorApplication>();
     app->Run();
-    delete app;
 }

@@ -5,9 +5,13 @@
 #ifndef SIGNEPROJECT_APPLICATIONLAYER_H
 #define SIGNEPROJECT_APPLICATIONLAYER_H
 
+#include <string>
+#include <vector>
 
-#include "Scene/Scene.h"
-
+namespace SignE::Core::Scene
+{
+    class Scene;
+}
 
 namespace SignE::Core::Application {
     using SignE::Core::Scene::Scene;

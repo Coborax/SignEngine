@@ -5,6 +5,9 @@
 #include "ImGuiLayer.h"
 #include "Renderer/Renderer2D.h"
 
+#include "Application.h" 
+#include "Scene/Scene.h"
+
 using Renderer2D = SignE::Core::Renderer::Renderer2D;
 
 namespace SignE::Core::Application {

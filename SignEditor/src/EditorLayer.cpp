@@ -6,16 +6,22 @@
 #include "Renderer/Renderer2D.h"
 #include "Scene/Entity.h"
 #include "Scene/Components.h"
+#include "Scripting/LuaScriptEngine.h"
+#include "imgui.h"
 
 namespace SignE::Editor::Application {
     using SignE::Core::Renderer::Renderer2D;
-    using SignE::Core::Scene::RectangleRenderer;
-    using SignE::Core::Scene::Position;
-    using SignE::Core::Scene::ColorRGBA;
+    using SignE::Core::Scene::Components::RectangleRenderer;
+    using SignE::Core::Scene::Components::Position;
+    using SignE::Core::Scene::Components::Rect;
+    using SignE::Core::Scene::Components::LuaScript;
+    using SignE::Core::Scripting::LuaScriptEngine;
 
     void EditorLayer::OnInit() {
         ImGuiLayer::OnInit();
         Renderer2D::InitRenderTexture();
+
+        LuaScriptEngine::Pause();
 
         ImGuiIO& io = ImGui::GetIO();
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
@@ -61,8 +67,8 @@ namespace SignE::Editor::Application {
             ImGui::Text("%s", selectedEntity.GetTag().c_str());
             ImGui::Separator();
 
-            if (ImGui::CollapsingHeader("Position", ImGuiTreeNodeFlags_DefaultOpen)) {
-                if (selectedEntity.HasComponent<Position>()) {
+            if (selectedEntity.HasComponent<Position>()) {
+                if (ImGui::CollapsingHeader("Position", ImGuiTreeNodeFlags_DefaultOpen)) {
                     auto& pos = selectedEntity.GetComponent<Position>();
 
                     ImGui::Text("Position");
@@ -71,13 +77,24 @@ namespace SignE::Editor::Application {
                 }
             }
 
-            if (ImGui::CollapsingHeader("Rectangle Renderer", ImGuiTreeNodeFlags_DefaultOpen)) {
-                if (selectedEntity.HasComponent<RectangleRenderer>()) {
+            if (selectedEntity.HasComponent<Rect>()) {
+                if (ImGui::CollapsingHeader("Rectangle", ImGuiTreeNodeFlags_DefaultOpen)) {
+                    auto& rect = selectedEntity.GetComponent<Rect>();
+
+                    ImGui::Text("Rectangle");
+                    ImGui::DragFloat("Width", &rect.width);
+                    ImGui::DragFloat("Height", &rect.height);
+                }
+            }
+
+            if (selectedEntity.HasComponent<RectangleRenderer>()) {
+                if (ImGui::CollapsingHeader("Rectangle Renderer", ImGuiTreeNodeFlags_DefaultOpen)) {
                     auto& rectangleRenderer = selectedEntity.GetComponent<RectangleRenderer>();
 
-                    ImGui::Text("Dimensions");
-                    ImGui::DragFloat("Width", &rectangleRenderer.width);
-                    ImGui::DragFloat("Height", &rectangleRenderer.height);
+                    // Moved to own component 
+                    // ImGui::Text("Rectangle");
+                    // ImGui::DragFloat("Width", &rectangleRenderer.rect.width);
+                    // ImGui::DragFloat("Height", &rectangleRenderer.rect.height);
 
                     ImVec4* color = (ImVec4*) &rectangleRenderer.color;
                     ImGui::Text("Color");
@@ -92,11 +109,26 @@ namespace SignE::Editor::Application {
                     }
                 }
             }
+            
+            if (selectedEntity.HasComponent<LuaScript>())
+            {
+                if (ImGui::CollapsingHeader("Lua Script", ImGuiTreeNodeFlags_DefaultOpen))
+                {
+                    auto& luaScript = selectedEntity.GetComponent<LuaScript>();
+                    char* code = const_cast<char*>(luaScript.code.c_str()); 
+                    ImGui::InputTextMultiline("Code", code, 100);
+
+                    if (ImGui::Button("Run Code")) {
+                        LuaScriptEngine::RunScript(code);
+                    }
+                }
+            }
         }
 
         ImGui::End();
 
         ImGui::Begin("Asset Browser");
+
         ImGui::End();
 
         ImGui::Begin("Scene View");

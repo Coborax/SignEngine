@@ -5,12 +5,24 @@
 #include "Scene.h"
 
 #include <utility>
+
 #include "../Renderer/Renderer2D.h"
 #include "Entity.h"
 #include "Components.h"
+#include "Scripting/LuaScriptEngine.h"
+#include "raylib.h"
+
 
 namespace SignE::Core::Scene {
     using Renderer::Renderer2D;
+
+    using Components::RectangleRenderer;
+    using Components::Position;
+    using Components::Rect;
+    using Components::Color;
+    using Components::LuaScript;
+
+    using Scripting::LuaScriptEngine;
 
     void Scene::OnInit() {
         Log::LogInfo("OnInit Scene: " + name);
@@ -20,19 +32,28 @@ namespace SignE::Core::Scene {
     }
 
     void Scene::OnUpdate(float dt) {
-
+        // Run Lua Scripts 
+        if (!LuaScriptEngine::IsPaused()) {
+            auto view = registry.view<LuaScript>();
+            for (auto entity : view) {
+                auto& luaScript = view.get<LuaScript>(entity);
+                LuaScriptEngine::RunScript(luaScript.code);
+            }
+        }
     }
 
     void Scene::OnDraw() {
-
         // Draw Rectangles
         auto view = registry.view<Position, RectangleRenderer>();
         for(auto entity: view) {
-            auto& pos = view.get<Position>(entity);
-            auto& box = view.get<RectangleRenderer>(entity);
-            Renderer2D::DrawRect(pos.x, pos.y, box.width, box.height, box.color.r, box.color.g, box.color.b, box.color.a);
-        }
+            auto& rectRenderer = view.get<RectangleRenderer>(entity);
 
+            auto& pos = view.get<Position>(entity);
+            auto& rect = rectRenderer.rect;
+            auto& color = rectRenderer.color;
+
+            Renderer2D::DrawRect(pos.x, pos.y, rect.width, rect.height, color.r, color.g, color.b, color.a);
+        }
     }
 
     void Scene::OnShutdown() {
@@ -44,7 +65,10 @@ namespace SignE::Core::Scene {
 
         Entity entity = {entityHandle, tag, this };
         entity.AddComponent<Position>(100.0f, 100.0f);
-        entity.AddComponent<RectangleRenderer>(10.0f, 10.0f);
+        auto& rect = entity.AddComponent<Rect>(100.0f, 100.0f);
+        entity.AddComponent<RectangleRenderer>(rect, Color{ 0.529f, 0.808f, 0.922f, 1.0f });
+
+        entity.AddComponent<LuaScript>("print('Hello from Lua!')");
 
         entityMap[tag] = entityHandle;
 

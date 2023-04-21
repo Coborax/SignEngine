@@ -3,6 +3,8 @@
 //
 
 #include "ApplicationLayer.h"
+#include "Log.h"
+#include "Scene/Scene.h"
 
 namespace SignE::Core::Application {
     void ApplicationLayer::OnInit() {

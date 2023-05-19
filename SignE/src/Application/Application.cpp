@@ -3,19 +3,30 @@
 //
 #include <iostream>
 
+#include "Application/Window.h"
+#include "Renderer/Renderer2D.h"
 #include "Scripting/LuaScriptEngine.h"
-#include "raylib.h"
-
 #include "Application.h"
 #include "Log.h"
+#include "Renderer/Renderer.h"
 
 namespace SignE::Core::Application {
     using namespace SignE::Core::Scripting;
 
+    float Application::GetDeltaTime() {
+        return 0.0f;
+    }
+
     void Application::Run() {
 
         Log::LogInfo("Initializing Window");
-        InitWindow(1280, 720, name.c_str());
+        Window window("SignE", 1280, 720);
+
+        Log::LogInfo("Initializing Renderer");
+        Renderer::RenderCommand::Create(Renderer::RenderAPI::OpenGL);
+        Renderer::RenderCommand::Init();
+
+        Renderer::Renderer2D::Init();
 
         Log::LogInfo("Initializing Lua Scripting Engine");
         LuaScriptEngine::Init();
@@ -25,16 +36,21 @@ namespace SignE::Core::Application {
         }
 
         running = true;
-        while (!WindowShouldClose()) {
+        while (!window.ShouldClose()) {
+            Renderer::RenderCommand::Clear();
+
             // Update application layers
             for (ApplicationLayer* layer: layers) {
-                layer->OnUpdate(GetFrameTime());
+                layer->OnUpdate(GetDeltaTime());
             }
 
             // Draw application layers
             for (ApplicationLayer* layer: layers) {
                 layer->OnDraw();
             }
+
+            window.SwapBuffers();
+            window.PollEvents(); 
         }
 
         Log::LogInfo("Application Shutting Down");

@@ -5,8 +5,11 @@
 #ifndef SIGNEPROJECT_APPLICATIONLAYER_H
 #define SIGNEPROJECT_APPLICATIONLAYER_H
 
+#include <memory>
 #include <string>
 #include <vector>
+
+#include "Ref.h"
 
 namespace SignE::Core::Scene
 {
@@ -23,13 +26,13 @@ namespace SignE::Core::Application {
         virtual void OnDraw();
         virtual void OnShutdown();
 
-        void PushScene(Scene* scene) { scenes.push_back(scene); }
-        void SetActiveScene(Scene* scene);
+        void PushScene(const Ref<Scene> scene) { scenes.push_back(scene); }
+        void SetActiveScene(const Ref<Scene>& scene);
 
         std::string Name = "Application Layer";
-        Scene* ActiveScene;
+        Ref<Scene> ActiveScene;
     private:
-        std::vector<Scene*> scenes;
+        std::vector<Ref<Scene>> scenes;
     };
 }
 

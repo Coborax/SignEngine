@@ -2,8 +2,16 @@
 // Created by Mikkel Mouridsen on 13/01/2023.
 //
 
+#ifndef SIGNEPROJECT_COMPONENTS_H
+#define SIGNEPROJECT_COMPONENTS_H
+
 #include <string>
 namespace SignE::Core::Scene::Components {
+
+    struct Tag {
+        std::string tag;
+    };
+
     struct Position {
         float x;
         float y;
@@ -22,7 +30,7 @@ namespace SignE::Core::Scene::Components {
     };
 
     struct RectangleRenderer {
-        Rect& rect;
+        Rect rect;
         Color color;
     };
 
@@ -31,3 +39,5 @@ namespace SignE::Core::Scene::Components {
     };
 
 }
+
+#endif //SIGNEPROJECT_COMPONENTS_H

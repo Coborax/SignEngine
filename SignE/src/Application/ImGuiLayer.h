@@ -5,8 +5,7 @@
 #ifndef SIGNEPROJECT_IMGUILAYER_H
 #define SIGNEPROJECT_IMGUILAYER_H
 
-#include "imgui.h"
-#include "../includes/rlImGui/rlImGui.h"
+#include <imgui.h>
 
 #include "ApplicationLayer.h"
 

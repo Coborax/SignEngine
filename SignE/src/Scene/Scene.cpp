@@ -10,8 +10,6 @@
 #include "Entity.h"
 #include "Components.h"
 #include "Scripting/LuaScriptEngine.h"
-#include "raylib.h"
-
 
 namespace SignE::Core::Scene {
     using Renderer::Renderer2D;
@@ -37,7 +35,7 @@ namespace SignE::Core::Scene {
             auto view = registry.view<LuaScript>();
             for (auto entity : view) {
                 auto& luaScript = view.get<LuaScript>(entity);
-                LuaScriptEngine::RunScript(luaScript.code);
+                LuaScriptEngine::RunUpdateFunction({ entity, this }, luaScript.code);
             }
         }
     }
@@ -63,13 +61,7 @@ namespace SignE::Core::Scene {
     Entity Scene::CreateEntity(std::string tag) {
         auto entityHandle = registry.create();
 
-        Entity entity = {entityHandle, tag, this };
-        entity.AddComponent<Position>(100.0f, 100.0f);
-        auto& rect = entity.AddComponent<Rect>(100.0f, 100.0f);
-        entity.AddComponent<RectangleRenderer>(rect, Color{ 0.529f, 0.808f, 0.922f, 1.0f });
-
-        entity.AddComponent<LuaScript>("print('Hello from Lua!')");
-
+        Entity entity = { entityHandle, this };
         entityMap[tag] = entityHandle;
 
         return entity;
@@ -77,17 +69,19 @@ namespace SignE::Core::Scene {
 
     Entity Scene::GetEntityByTag(std::string tag) {
         if (entityMap.find(tag) != entityMap.end())
-            return { entityMap.at(tag), tag, this };
+            return { entityMap.at(tag), this };
         return {};
     }
 
     std::vector<Entity> Scene::GetAllEntities() {
-        std::vector<Entity> result;
+        std::vector<Entity> entities;
 
-        for (auto const& [tag, entity] : entityMap)
-            result.emplace_back(entity, tag, this);
+        auto view = registry.view<Tag>();
+        for (auto entity : view) {
+            entities.push_back({ entity, this });
+        }
 
-        return result;
+        return entities;
     }
 }
 

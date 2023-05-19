@@ -7,6 +7,8 @@
 
 
 #include "Application/ApplicationLayer.h"
+#include "Ref.h"
+#include "Renderer/Renderer.h"
 #include <vector>
 
 namespace SignE::Core::Application {
@@ -18,6 +20,7 @@ namespace SignE::Core::Application {
 
         void Run();
         void PushLayer(ApplicationLayer* layer);
+        static float GetDeltaTime();
     private:
         std::vector<ApplicationLayer*> layers;
         bool running = false;

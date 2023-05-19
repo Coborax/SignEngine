@@ -8,6 +8,7 @@
 
 #include "Application/ImGuiLayer.h"
 #include "Scene/Entity.h"
+#include <memory>
 namespace SignE::Editor::Application {
     using SignE::Core::Scene::Scene;
     using SignE::Core::Scene::Entity;
@@ -24,8 +25,8 @@ namespace SignE::Editor::Application {
         void DrawUI();
         void DrawScene();
     private:
-        Scene editorScene;
-        Scene playScene;
+        Ref<Scene> editorScene;
+        Ref<Scene> playScene;
 
         Entity selectedEntity;
     };

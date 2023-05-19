@@ -1,0 +1,19 @@
+BasedOnStyle:  Microsoft
+AccessModifierOffset: -4
+AlignEscapedNewlines: Left
+AlwaysBreakBeforeMultilineStrings: true
+AlwaysBreakTemplateDeclarations: Yes
+BraceWrapping:
+  BeforeLambdaBody: true
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: false
+BreakConstructorInitializers: BeforeComma
+CompactNamespaces: true
+IndentCaseLabels: true
+KeepEmptyLinesAtTheStartOfBlocks: false
+NamespaceIndentation: Inner
+PackConstructorInitializers: NextLine
+PointerAlignment: Left
+SortIncludes: Never
+SpaceAfterTemplateKeyword: false

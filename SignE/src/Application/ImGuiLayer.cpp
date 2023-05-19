@@ -13,7 +13,6 @@ using Renderer2D = SignE::Core::Renderer::Renderer2D;
 namespace SignE::Core::Application {
     void ImGuiLayer::OnInit() {
         ApplicationLayer::OnInit();
-        rlImGuiSetup(true);
     }
 
     void ImGuiLayer::OnUpdate(float dt) {

@@ -7,14 +7,19 @@
 
 
 #include <string>
+#include "Scene/SceneSerializer.h"
 #include "entt/entt.hpp"
 #include "Scene.h"
+#include "Components.h"
+#include "Log.h"
 
 namespace SignE::Core::Scene {
+    using namespace SignE::Core::Scene::Components;
+
     class Entity {
     public:
         Entity() = default;
-        Entity(entt::entity entityHandle, std::string tag, Scene* scene) : entityHandle(entityHandle), tag(tag), scene(scene) {};
+        Entity(entt::entity entityHandle, Scene* scene) : entityHandle(entityHandle), scene(scene) {};
 
         template<typename T, typename... Args>
         T& AddComponent(Args&&... args) {
@@ -32,11 +37,22 @@ namespace SignE::Core::Scene {
         }
 
         std::string GetTag() {
-            return tag;
+            if (HasComponent<Tag>()) {
+                return GetComponent<Tag>().tag;
+            }
+            return "";
         }
 
+        bool IsValid() {
+            if (scene == nullptr) {
+                return false;
+            }
+            return scene->registry.valid(entityHandle);
+        }
+
+        friend class SceneSerializer;
+
     private:
-        std::string tag;
         entt::entity entityHandle;
         Scene* scene;
     };

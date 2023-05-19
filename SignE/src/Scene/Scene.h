@@ -7,6 +7,7 @@
 
 #include <utility>
 
+#include "Scene/SceneSerializer.h"
 #include "entt/entt.hpp"
 #include "../Log.h"
 
@@ -28,6 +29,7 @@ namespace SignE::Core::Scene {
         std::vector<Entity> GetAllEntities();
 
         friend class Entity;
+        friend class SceneSerializer;
 
     private:
         entt::registry registry;

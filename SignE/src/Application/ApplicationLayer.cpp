@@ -5,6 +5,7 @@
 #include "ApplicationLayer.h"
 #include "Log.h"
 #include "Scene/Scene.h"
+#include <memory>
 
 namespace SignE::Core::Application {
     void ApplicationLayer::OnInit() {
@@ -21,9 +22,8 @@ namespace SignE::Core::Application {
             ActiveScene->OnDraw();
     }
 
-    void ApplicationLayer::SetActiveScene(Scene*scene) {
-        if (std::find(scenes.begin(), scenes.end(), scene) == scenes.end())
-            scenes.push_back(scene);
+    void ApplicationLayer::SetActiveScene(const Ref<Scene>& scene) {
+        scenes.push_back(scene);
 
         ActiveScene = scene;
         ActiveScene->OnInit();
@@ -31,7 +31,7 @@ namespace SignE::Core::Application {
 
     void ApplicationLayer::OnShutdown() {
         Log::LogInfo("OnShutdown Application Layer: " + Name);
-        for (Scene* scene : scenes) {
+        for (auto scene : scenes) {
             scene->OnShutdown();
         }
     }

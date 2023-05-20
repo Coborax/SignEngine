@@ -2,6 +2,7 @@
 #define WINDOW_H
 
 #include <string>
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -14,7 +15,12 @@ public:
 
     bool ShouldClose() const { return glfwWindowShouldClose(window); }
     void SwapBuffers() const { glfwSwapBuffers(window); }
-    void PollEvents() const { glfwPollEvents(); }
+    void PollEvents() const;
+
+    void BeginImGuiFrame() const;
+    void EndImGuiFrame() const;
+
+    GLFWwindow* GetNativeWindow() const { return window; }
 private:
     std::string title;
     int width;

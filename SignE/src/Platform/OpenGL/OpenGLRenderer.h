@@ -10,7 +10,11 @@ public:
     void Init() override;
     void SetClearColor(float r, float g, float b, float a) override;
     void Clear() override;
+
     void DrawIndexed(const Ref<VertexArray> &vertexArray) override;
+
+    void BeginImGuiFrame() override;
+    void EndImGuiFrame() override;
 };
 
 } // namespace SignE::Core::Renderer

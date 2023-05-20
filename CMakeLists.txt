@@ -10,3 +10,6 @@ add_subdirectory(SignE)
 
 # Add SignEditor console app
 add_subdirectory(SignEditor)
+
+# Add Sandbox console app
+add_subdirectory(Sandbox)

@@ -28,7 +28,10 @@ public:
     virtual void SetClearColor(float r, float g, float b, float a) = 0;
     virtual void Clear() = 0;
 
-    virtual void DrawIndexed(const Ref<VertexArray> &vertexArray) = 0;
+    virtual void DrawIndexed(const Ref<VertexArray>& vertexArray) = 0;
+
+    virtual void BeginImGuiFrame() = 0;
+    virtual void EndImGuiFrame() = 0;
 
     static void SetAPI(RenderAPI api)
     {
@@ -49,11 +52,16 @@ private:
 class RenderCommand
 {
 public:
-  static void Init();
-  static void SetClearColor(float r, float g, float b, float a);
-  static void Clear();
-  static void DrawIndexed(const Ref<VertexArray> &vertexArray);
-  static void Create(RenderAPI api);
+    static void Init();
+    static void SetClearColor(float r, float g, float b, float a);
+    static void Clear();
+
+    static void DrawIndexed(const Ref<VertexArray>& vertexArray);
+
+    static void Create(RenderAPI api);
+
+    static void BeginImGuiFrame();
+    static void EndImGuiFrame();
 
 private:
     static Unique<Renderer> renderer;

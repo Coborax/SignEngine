@@ -37,16 +37,6 @@ public:
     static void ImGuiDrawRenderTexture(int width, int height);
 
     static void DrawFPS();
-
-private:
-    static float vertices[];
-    static unsigned int indices[];
-
-    static Ref<VertexBuffer> vertexBuffer;
-    static Ref<IndexBuffer> indexBuffer;
-    static Ref<VertexArray> vertexArray;
-
-    static Ref<Shader> shader;
 };
 } // namespace SignE::Core::Renderer
 

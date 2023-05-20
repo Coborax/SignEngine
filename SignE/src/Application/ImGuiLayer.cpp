@@ -29,11 +29,9 @@ namespace SignE::Core::Application {
     }
 
     void ImGuiLayer::BeginImGui() {
-        Renderer2D::BeginImGui();
     }
 
     void ImGuiLayer::EndImGui() {
-        Renderer2D::EndImGui();
     }
 }
 

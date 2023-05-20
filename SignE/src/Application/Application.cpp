@@ -3,29 +3,39 @@
 //
 #include <iostream>
 
+#include "Application/ApplicationLayer.h"
 #include "Application/Window.h"
 #include "Renderer/Renderer2D.h"
 #include "Scripting/LuaScriptEngine.h"
 #include "Application.h"
 #include "Log.h"
+#include "Ref.h"
 #include "Renderer/Renderer.h"
 
 namespace SignE::Core::Application {
     using namespace SignE::Core::Scripting;
 
+    Ref<Window> Application::window = nullptr;
+
     float Application::GetDeltaTime() {
         return 0.0f;
     }
 
+    Ref<Window> Application::GetWindow() {
+        return window;
+    }
+
     void Application::Run() {
 
+        Renderer::RenderCommand::Create(Renderer::RenderAPI::OpenGL);
+
         Log::LogInfo("Initializing Window");
-        Window window("SignE", 1280, 720);
+        window = CreateRef<Window>(name, 1280, 720);
+
 
         Log::LogInfo("Initializing Renderer");
-        Renderer::RenderCommand::Create(Renderer::RenderAPI::OpenGL);
         Renderer::RenderCommand::Init();
-
+        Renderer::RenderCommand::SetClearColor(0.1f, 0.1f, 0.15f, 1.0f);
         Renderer::Renderer2D::Init();
 
         Log::LogInfo("Initializing Lua Scripting Engine");
@@ -36,8 +46,9 @@ namespace SignE::Core::Application {
         }
 
         running = true;
-        while (!window.ShouldClose()) {
+        while (!window->ShouldClose()) {
             Renderer::RenderCommand::Clear();
+            window->PollEvents(); 
 
             // Update application layers
             for (ApplicationLayer* layer: layers) {
@@ -49,8 +60,7 @@ namespace SignE::Core::Application {
                 layer->OnDraw();
             }
 
-            window.SwapBuffers();
-            window.PollEvents(); 
+            window->SwapBuffers();
         }
 
         Log::LogInfo("Application Shutting Down");

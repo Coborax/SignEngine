@@ -3,6 +3,7 @@
 #include "Log.h"
 
 #include <GL/glew.h>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace SignE::Core::Renderer
 {
@@ -65,5 +66,41 @@ void OpenGLShader::Unbind() const
 {
     glUseProgram(0);
 }
+
+void OpenGLShader::SetInt(const std::string& name, int value)
+{
+    glUniform1i(glGetUniformLocation(rendererID, name.c_str()), value);
+}
+
+void OpenGLShader::SetIntArray(const std::string& name, int* values, uint32_t count)
+{
+    glUniform1iv(glGetUniformLocation(rendererID, name.c_str()), count, values);
+}
+
+void OpenGLShader::SetFloat(const std::string& name, float value)
+{
+    glUniform1f(glGetUniformLocation(rendererID, name.c_str()), value);
+}
+
+void OpenGLShader::SetFloat2(const std::string& name, const glm::vec2& value)
+{
+    glUniform2f(glGetUniformLocation(rendererID, name.c_str()), value.x, value.y);
+}
+
+void OpenGLShader::SetFloat3(const std::string& name, const glm::vec3& value)
+{
+    glUniform3f(glGetUniformLocation(rendererID, name.c_str()), value.x, value.y, value.z);
+}
+
+void OpenGLShader::SetFloat4(const std::string& name, const glm::vec4& value)
+{
+    glUniform4f(glGetUniformLocation(rendererID, name.c_str()), value.x, value.y, value.z, value.w);
+}
+
+void OpenGLShader::SetMat4(const std::string& name, const glm::mat4& value)
+{
+    glUniformMatrix4fv(glGetUniformLocation(rendererID, name.c_str()), 1, GL_FALSE, glm::value_ptr(value));
+}
+
 
 } // namespace SignE::Core::Renderer

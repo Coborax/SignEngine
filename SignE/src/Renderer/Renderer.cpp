@@ -58,4 +58,15 @@ void RenderCommand::Create(RenderAPI api)
     Renderer::SetAPI(api);
     renderer = Renderer::Create();
 }
+
+void RenderCommand::BeginImGuiFrame()
+{
+    renderer->BeginImGuiFrame();
+}
+
+void RenderCommand::EndImGuiFrame()
+{
+    renderer->EndImGuiFrame();
+}
+
 } // namespace SignE::Core::Renderer

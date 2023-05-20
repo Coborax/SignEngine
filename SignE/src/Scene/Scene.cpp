@@ -24,9 +24,6 @@ namespace SignE::Core::Scene {
 
     void Scene::OnInit() {
         Log::LogInfo("OnInit Scene: " + name);
-
-        CreateEntity("Test Entity");
-        CreateEntity("Test Entity 2");
     }
 
     void Scene::OnUpdate(float dt) {
@@ -63,6 +60,8 @@ namespace SignE::Core::Scene {
 
         Entity entity = { entityHandle, this };
         entityMap[tag] = entityHandle;
+
+        entity.AddComponent<Tag>(tag);
 
         return entity;
     }

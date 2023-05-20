@@ -207,4 +207,11 @@ $RECYCLE.BIN/
 
 # End of https://www.toptal.com/developers/gitignore/api/clion,macos,linux,windows,cmake
 
+# Build folder
+build/
 
+# Clangd cache
+.cache/
+
+# Neovim build config
+neovim.json

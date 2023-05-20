@@ -3,6 +3,9 @@
 #include "Renderer/VertexArray.h"
 #include "Renderer/IndexBuffer.h"
 
+#include <imgui.h>
+#include <imgui_impl_opengl3.h>
+
 namespace SignE::Core::Renderer
 {
 
@@ -13,6 +16,10 @@ void OpenGLRenderer::Init()
         Log::LogError("No render api selected");
         throw std::runtime_error("No render api selected");
     }
+
+    glEnable(GL_DEPTH_TEST);
+
+    ImGui_ImplOpenGL3_Init();
 }
 
 void OpenGLRenderer::SetClearColor(float r, float g, float b, float a)
@@ -22,11 +29,22 @@ void OpenGLRenderer::SetClearColor(float r, float g, float b, float a)
 
 void OpenGLRenderer::Clear()
 {
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void OpenGLRenderer::DrawIndexed(const Ref<VertexArray>& vertexArray)
 {
     glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 }
+
+void OpenGLRenderer::BeginImGuiFrame()
+{
+    ImGui_ImplOpenGL3_NewFrame();
+}
+
+void OpenGLRenderer::EndImGuiFrame()
+{
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
 } // namespace SignE::Core::Renderer

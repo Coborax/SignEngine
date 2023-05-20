@@ -45,6 +45,9 @@ add_library(SignE STATIC
         src/Scene/SceneSerializer.cpp
         src/Scene/SceneSerializer.h
 
+        src/Input/Input.h
+        src/Input/Input.cpp
+
         src/Scripting/LuaScriptGlue.cpp
         src/Scripting/LuaScriptGlue.h
         src/Scripting/LuaScriptEngine.cpp
@@ -55,7 +58,7 @@ target_include_directories(SignE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 # Add EnTT
 find_package(EnTT CONFIG REQUIRED)
-include_directories(${EnTT_INCLUDE_DIR})
+# include_directories(${EnTT_INCLUDE_DIR})
 target_link_libraries(SignE PRIVATE EnTT::EnTT)
 
 # Add ImGui
@@ -88,3 +91,6 @@ target_link_libraries(SignE PRIVATE GLEW::GLEW)
 
 find_package(glm CONFIG REQUIRED)
 target_link_libraries(SignE PRIVATE glm::glm)
+
+find_package(tinyobjloader CONFIG REQUIRED)
+target_link_libraries(SignE PRIVATE tinyobjloader::tinyobjloader)

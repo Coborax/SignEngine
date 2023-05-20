@@ -6,13 +6,14 @@
 #define MYPROJECT_APPLICATION_H
 
 
-#include "Application/ApplicationLayer.h"
 #include "Ref.h"
-#include "Renderer/Renderer.h"
+
+#include <string>
 #include <vector>
 
 namespace SignE::Core::Application {
     class ApplicationLayer;
+    class Window;
 
     class Application {
     public:
@@ -20,11 +21,14 @@ namespace SignE::Core::Application {
 
         void Run();
         void PushLayer(ApplicationLayer* layer);
+
         static float GetDeltaTime();
+        static Ref<Window> GetWindow();
     private:
         std::vector<ApplicationLayer*> layers;
         bool running = false;
         std::string name;
+        static Ref<Window> window;
     };
 }
 

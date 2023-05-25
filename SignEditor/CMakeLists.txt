@@ -40,3 +40,6 @@ target_link_libraries(SignEditor PRIVATE glm::glm)
 
 find_package(tinyobjloader CONFIG REQUIRED)
 target_link_libraries(SignEditor PRIVATE tinyobjloader::tinyobjloader)
+
+find_package(imguizmo CONFIG REQUIRED)
+target_link_libraries(SignEditor PRIVATE imguizmo::imguizmo)

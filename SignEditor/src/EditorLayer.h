@@ -8,7 +8,13 @@
 
 #include "Application/ImGuiLayer.h"
 #include "Scene/Entity.h"
+#include <ImGuizmo.h>
 #include <memory>
+
+namespace SignE::Core::Renderer {
+    class Framebuffer;
+}
+
 namespace SignE::Editor::Application {
     using SignE::Core::Scene::Scene;
     using SignE::Core::Scene::Entity;
@@ -24,11 +30,15 @@ namespace SignE::Editor::Application {
 
         void DrawUI();
         void DrawScene();
+        void DrawGrid();
     private:
+        Ref<Core::Renderer::Framebuffer> framebuffer;
         Ref<Scene> editorScene;
         Ref<Scene> playScene;
 
         Entity selectedEntity;
+        ImGuizmo::MODE gizmoMode = ImGuizmo::MODE::LOCAL;
+        ImGuizmo::OPERATION gizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
     };
 }
 

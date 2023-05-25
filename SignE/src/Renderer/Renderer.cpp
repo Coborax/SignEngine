@@ -53,6 +53,11 @@ void RenderCommand::DrawIndexed(const Ref<VertexArray>& vertexArray)
     renderer->DrawIndexed(vertexArray);
 }
 
+void RenderCommand::DrawIndexedLines(const Ref<VertexArray>& vertexArray)
+{
+    renderer->DrawIndexedLines(vertexArray);
+}
+
 void RenderCommand::Create(RenderAPI api)
 {
     Renderer::SetAPI(api);
@@ -67,6 +72,11 @@ void RenderCommand::BeginImGuiFrame()
 void RenderCommand::EndImGuiFrame()
 {
     renderer->EndImGuiFrame();
+}
+
+void RenderCommand::SetViewport(int x, int y, int width, int height)
+{
+    renderer->SetViewport(x, y, width, height);
 }
 
 } // namespace SignE::Core::Renderer

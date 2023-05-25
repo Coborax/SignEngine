@@ -8,6 +8,8 @@ namespace SignE::Editor::Application {
     class SignEditorApplication : public Application {
     public:
         SignEditorApplication() : Application("SignEditor") {
+            Core::VFS::Instance().Mount("/Users/cobo/Dev/GlobalAssets/scenes", "scenes");
+            Core::VFS::Instance().Mount("/Users/cobo/Dev/GlobalAssets/models", "models");
             PushLayer(&editorLayer);
         }
 

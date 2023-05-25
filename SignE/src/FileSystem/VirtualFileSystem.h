@@ -12,13 +12,11 @@ namespace SignE::Core::VFS {
         void Unmount(std::string mountPoint);
 
         std::string ReadFile(std::string path);
-        void WriteFile(std::string path, std::string data);
 
-        std::string GetMountPoint(std::string path);
-        std::string GetPath(std::string path);
+        std::string GetAbsolutePath(std::string path);
 
     private:
-        std::map<std::string, std::string> mounts;
+        static std::map<std::string, std::string> mounts;
     };
     
     static VirtualFileSystem& Instance() {

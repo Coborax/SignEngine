@@ -3,12 +3,22 @@
 //
 
 #include "EditorLayer.h"
+
+#include "Renderer/Renderer.h"
 #include "Renderer/Renderer2D.h"
 #include "Scene/Entity.h"
 #include "Scene/Components.h"
 #include "Scripting/LuaScriptEngine.h"
 #include "Scene/SceneSerializer.h"
-#include "imgui.h"
+#include "Renderer/Framebuffer.h"
+
+#include <_types/_uint32_t.h>
+#include <glm/glm.hpp>
+#include <glm/ext/matrix_clip_space.hpp>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/gtx/quaternion.hpp>
+#include <imgui.h>
+#include <ImGuizmo.h>
 #include <memory>
 
 namespace SignE::Editor::Application
@@ -16,10 +26,12 @@ namespace SignE::Editor::Application
 using SignE::Core::Renderer::Renderer2D;
 using SignE::Core::Scene::SceneSerializer;
 using SignE::Core::Scene::Components::LuaScript;
+using SignE::Core::Scene::Components::MeshRenderer;
 using SignE::Core::Scene::Components::Position;
 using SignE::Core::Scene::Components::Rect;
 using SignE::Core::Scene::Components::RectangleRenderer;
 using SignE::Core::Scene::Components::Tag;
+using SignE::Core::Scene::Components::Transform;
 
 void EditorLayer::OnInit()
 {
@@ -28,11 +40,13 @@ void EditorLayer::OnInit()
 
     Core::Log::SetupInMemoryLog();
 
-    // ImGuiIO &io = ImGui::GetIO();
-    // io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
     editorScene = CreateRef<Scene>();
     SetActiveScene(editorScene);
+
+    framebuffer = Core::Renderer::Framebuffer::Create(1280, 720);
 }
 
 void EditorLayer::OnDraw()
@@ -47,11 +61,14 @@ void EditorLayer::OnShutdown()
     Renderer2D::CleanupRenderTexture();
 }
 
+void EditorLayer::DrawGrid()
+{}
+
 void EditorLayer::DrawUI()
 {
     EditorLayer::BeginImGui();
 
-    ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+    ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
 
     if (ImGui::BeginMainMenuBar())
     {
@@ -68,14 +85,14 @@ void EditorLayer::DrawUI()
                 SetActiveScene(editorScene);
                 SceneSerializer serializer(editorScene);
 
-                auto path = "test.yaml";
+                auto path = "scenes/sandbox.yaml";
                 serializer.Serialize(path);
             }
             if (ImGui::MenuItem("Save Scene"))
             {
                 SceneSerializer serializer(editorScene);
 
-                auto path = "test.yaml";
+                auto path = "scenes/sandbox.yaml";
                 serializer.Deserialize(path);
             }
             ImGui::Separator();
@@ -91,14 +108,20 @@ void EditorLayer::DrawUI()
             ImGui::EndMenu();
         }
 
-
         if (ImGui::BeginMenu("Tools"))
         {
             if (ImGui::MenuItem("Add Example Entity"))
             {
                 auto entity = editorScene->CreateEntity("Entity");
-                entity.AddComponent<Position>();
-                entity.AddComponent<Rect>();
+                entity.AddComponent<Transform>();
+                entity.AddComponent<MeshRenderer>("models/keytruck/keytruck.obj", "models/keytruck/keytruck.png");
+            }
+            if (ImGui::MenuItem("Add Example Entity 2"))
+            {
+                auto entity = editorScene->CreateEntity("Entity");
+                entity.AddComponent<Transform>();
+                entity.AddComponent<MeshRenderer>("models/VikingRoom/viking_room.obj",
+                                                  "models/VikingRoom/viking_room.png");
             }
             ImGui::EndMenu();
         }
@@ -192,6 +215,31 @@ void EditorLayer::DrawUI()
                                           ImVec2(-FLT_MIN, ImGui::GetContentRegionAvail().y));
             }
         }
+
+        // 3D
+
+        if (selectedEntity.HasComponent<Transform>())
+        {
+            if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
+            {
+                auto& transform = selectedEntity.GetComponent<Transform>();
+                ImGui::DragFloat3("Position", &transform.position.x, 0.1f);
+                ImGui::DragFloat3("Rotation", &transform.rotation.x, 0.1f);
+                ImGui::DragFloat3("Scale", &transform.scale.x, 0.1f);
+            }
+        }
+
+        if (selectedEntity.HasComponent<MeshRenderer>())
+        {
+            if (ImGui::CollapsingHeader("Mesh Renderer", ImGuiTreeNodeFlags_DefaultOpen))
+            {
+                auto meshRenderer = selectedEntity.GetComponent<MeshRenderer>();
+                ImGui::InputText("Mesh", meshRenderer.modelPath.data(), 1024);
+                ImGui::InputText("Texture", meshRenderer.texturePath.data(), 1024);
+                // ImGui::Checkbox("Enabled", &meshRenderer.enabled);
+                // ImGui::Checkbox("Wireframe", &meshRenderer.wireframe);
+            }
+        }
     }
 
     ImGui::End();
@@ -200,10 +248,59 @@ void EditorLayer::DrawUI()
 
     ImGui::End();
 
-    ImGui::Begin("Scene View");
+    ImGui::Begin("Viewport");
 
     // Draw Viewport
     ImVec2 size = ImGui::GetContentRegionAvail();
+
+    framebuffer->Resize((uint32_t)size.x, (uint32_t)size.y);
+    ActiveScene->GetCamera()->SetViewportSize(size.x, size.y);
+    ImGui::Image((void*)(intptr_t)framebuffer->GetColorAttachmentRendererID(), size, ImVec2(0, 1), ImVec2(1, 0));
+
+    // Draw Gizmos
+    ImGuizmo::SetOrthographic(false);
+    ImGuizmo::SetDrawlist();
+
+    ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, size.x, size.y);
+
+    if (ImGui::IsKeyPressed(ImGuiKey_Q)) // z
+        gizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
+    if (ImGui::IsKeyPressed(ImGuiKey_W)) // e
+        gizmoOperation = ImGuizmo::OPERATION::ROTATE;
+    if (ImGui::IsKeyPressed(ImGuiKey_E)) // r
+        gizmoOperation = ImGuizmo::OPERATION::SCALE;
+
+    auto viewMatrix = editorScene->GetCamera()->GetViewMatrix();
+    auto projectionMatrix = editorScene->GetCamera()->GetProjectionMatrix();
+
+    if (selectedEntity.IsValid() && selectedEntity.HasComponent<Transform>())
+    {
+        auto& transform = selectedEntity.GetComponent<Transform>();
+
+        auto translationMatrix = glm::translate(glm::mat4(1.0f), transform.position);
+        auto rotationMatrix = glm::toMat4(glm::quat(transform.rotation));
+        auto scaleMatrix = glm::scale(glm::mat4(1.0f), transform.scale);
+
+        auto modelMatrix = translationMatrix * rotationMatrix * scaleMatrix;
+        ImGuizmo::Manipulate(&viewMatrix[0][0], &projectionMatrix[0][0], gizmoOperation, gizmoMode, &modelMatrix[0][0]);
+
+        switch (gizmoOperation)
+        {
+            case ImGuizmo::TRANSLATE:
+                transform.position = glm::vec3(modelMatrix[3]);
+                break;
+            case ImGuizmo::ROTATE:
+                transform.rotation = glm::eulerAngles(glm::quat_cast(modelMatrix));
+                break;
+            case ImGuizmo::SCALE:
+                transform.scale =
+                    glm::vec3(glm::length(modelMatrix[0]), glm::length(modelMatrix[1]), glm::length(modelMatrix[2]));
+                break;
+                break;
+            default:
+                break;
+        }
+    }
 
     ImGui::End();
 
@@ -225,7 +322,11 @@ void EditorLayer::DrawUI()
 
 void EditorLayer::DrawScene()
 {
-    ApplicationLayer::OnDraw(); // Draws Scenes
+    framebuffer->Bind();
+    Core::Renderer::RenderCommand::Clear();
+    ActiveScene->OnDraw();
+    // ApplicationLayer::OnDraw(); // Draws Scenes
+    framebuffer->Unbind();
 }
 
 EditorLayer::EditorLayer()

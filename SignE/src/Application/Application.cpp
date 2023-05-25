@@ -6,19 +6,22 @@
 #include "Application/ApplicationLayer.h"
 #include "Application/Window.h"
 #include "Renderer/Renderer2D.h"
+#include "Renderer/Renderer3D.h"
 #include "Scripting/LuaScriptEngine.h"
 #include "Application.h"
 #include "Log.h"
 #include "Ref.h"
 #include "Renderer/Renderer.h"
+#include "Input/Input.h"
 
 namespace SignE::Core::Application {
     using namespace SignE::Core::Scripting;
 
     Ref<Window> Application::window = nullptr;
+    float Application::deltaTime = 0.0f;
 
     float Application::GetDeltaTime() {
-        return 0.0f;
+        return deltaTime;
     }
 
     Ref<Window> Application::GetWindow() {
@@ -37,6 +40,7 @@ namespace SignE::Core::Application {
         Renderer::RenderCommand::Init();
         Renderer::RenderCommand::SetClearColor(0.1f, 0.1f, 0.15f, 1.0f);
         Renderer::Renderer2D::Init();
+        Renderer::Renderer3D::Init();
 
         Log::LogInfo("Initializing Lua Scripting Engine");
         LuaScriptEngine::Init();
@@ -47,12 +51,21 @@ namespace SignE::Core::Application {
 
         running = true;
         while (!window->ShouldClose()) {
+            // Calculate delta time
+            auto time = window->GetTime();
+            deltaTime = time - lastFrameTime;
+            lastFrameTime = time;
+
+            // Reset mouse offset
+            Input::Input::ResetMouseOffset();
+
+            // Clear screen and poll events
             Renderer::RenderCommand::Clear();
             window->PollEvents(); 
 
             // Update application layers
             for (ApplicationLayer* layer: layers) {
-                layer->OnUpdate(GetDeltaTime());
+                layer->OnUpdate(deltaTime);
             }
 
             // Draw application layers
@@ -60,6 +73,7 @@ namespace SignE::Core::Application {
                 layer->OnDraw();
             }
 
+            // Swap buffers
             window->SwapBuffers();
         }
 

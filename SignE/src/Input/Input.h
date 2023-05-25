@@ -1,6 +1,7 @@
 #ifndef INPUT_H
 #define INPUT_H
 
+#include <utility>
 namespace SignE::Core::Input
 {
 
@@ -144,6 +145,18 @@ class Input
 {
 public:
     static bool IsKeyPressed(KeyCode keycode);
+    static std::pair<float, float> GetMouseDelta();
+    static bool IsMouseButtonPressed(int button);
+    static bool IsMouseButtonReleased(int button);
+
+    static void MouseCallback(double xpos, double ypos);
+    static void ResetMouseOffset();
+private:
+    static float lastX;
+    static float lastY;
+    static float xOffset;
+    static float yOffset;
+    static bool firstMouse;
 };
 } // namespace SingE::Core::Input
 

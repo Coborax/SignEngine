@@ -3,10 +3,13 @@
 //
 
 #include "ImGuiLayer.h"
+#include "Renderer/Renderer.h"
 #include "Renderer/Renderer2D.h"
 
 #include "Application.h" 
 #include "Scene/Scene.h"
+
+#include "Window.h"
 
 using Renderer2D = SignE::Core::Renderer::Renderer2D;
 
@@ -29,9 +32,13 @@ namespace SignE::Core::Application {
     }
 
     void ImGuiLayer::BeginImGui() {
+        Renderer::RenderCommand::BeginImGuiFrame();
+        Application::GetWindow()->BeginImGuiFrame();
     }
 
     void ImGuiLayer::EndImGui() {
+        Application::GetWindow()->EndImGuiFrame();
+        Renderer::RenderCommand::EndImGuiFrame();
     }
 }
 

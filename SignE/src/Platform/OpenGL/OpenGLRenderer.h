@@ -12,9 +12,12 @@ public:
     void Clear() override;
 
     void DrawIndexed(const Ref<VertexArray> &vertexArray) override;
+    void DrawIndexedLines(const Ref<VertexArray> &vertexArray) override;
 
     void BeginImGuiFrame() override;
     void EndImGuiFrame() override;
+
+    void SetViewport(int x, int y, int width, int height) override;
 };
 
 } // namespace SignE::Core::Renderer

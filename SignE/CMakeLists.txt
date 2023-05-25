@@ -12,11 +12,16 @@ add_library(SignE STATIC
 
         src/FileSystem/VirtualFileSystem.h
         src/FileSystem/VirtualFileSystem.cpp
+
+        src/Helpers/stb_image.h
+        src/Helpers/stb_image.cpp
         
         src/Renderer/Renderer.h
         src/Renderer/Renderer.cpp
         src/Renderer/Renderer2D.h
         src/Renderer/Renderer2D.cpp
+        src/Renderer/Renderer3D.h
+        src/Renderer/Renderer3D.cpp
         src/Renderer/IndexBuffer.h
         src/Renderer/IndexBuffer.cpp
         src/Renderer/VertexBuffer.h
@@ -25,6 +30,17 @@ add_library(SignE STATIC
         src/Renderer/VertexArray.cpp
         src/Renderer/Shader.h
         src/Renderer/Shader.cpp
+        src/Renderer/Texture.h
+        src/Renderer/Texture.cpp
+        src/Renderer/Framebuffer.h
+        src/Renderer/Framebuffer.cpp
+
+        src/Resources/Resources.h
+        src/Resources/Resources.cpp
+        src/Resources/Model.h
+        src/Resources/Model.cpp
+        src/Resources/Texture.h
+        src/Resources/Texture.cpp
 
         src/Platform/OpenGL/OpenGLRenderer.h
         src/Platform/OpenGL/OpenGLRenderer.cpp
@@ -36,6 +52,10 @@ add_library(SignE STATIC
         src/Platform/OpenGL/OpenGLVertexArray.cpp
         src/Platform/OpenGL/OpenGLShader.h
         src/Platform/OpenGL/OpenGLShader.cpp
+        src/Platform/OpenGL/OpenGLTexture.h
+        src/Platform/OpenGL/OpenGLTexture.cpp
+        src/Platform/OpenGL/OpenGLFramebuffer.h
+        src/Platform/OpenGL/OpenGLFramebuffer.cpp
 
         src/Scene/Scene.h
         src/Scene/Scene.cpp
@@ -57,9 +77,8 @@ target_include_directories(SignE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 #### VCPKG ####
 
 # Add EnTT
-find_package(EnTT CONFIG REQUIRED)
-# include_directories(${EnTT_INCLUDE_DIR})
-target_link_libraries(SignE PRIVATE EnTT::EnTT)
+find_package(flecs CONFIG REQUIRED)
+target_link_libraries(SignE PRIVATE flecs::flecs flecs::flecs_static)
 
 # Add ImGui
 find_package(imgui CONFIG REQUIRED)

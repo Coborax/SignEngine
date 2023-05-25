@@ -4,83 +4,166 @@
 
 #include "Scene.h"
 
+#include <glm/ext/matrix_clip_space.hpp>
+#include <glm/ext/matrix_transform.hpp>
 #include <utility>
 
 #include "../Renderer/Renderer2D.h"
+#include "../Renderer/Renderer3D.h"
+#include "../Renderer/Renderer.h"
+#include "Renderer/Texture.h"
+#include "Resources/Resources.h"
 #include "Entity.h"
 #include "Components.h"
+#include "Resources/Texture.h"
 #include "Scripting/LuaScriptEngine.h"
 
-namespace SignE::Core::Scene {
-    using Renderer::Renderer2D;
+#include <glm/glm.hpp>
+#include <glm/gtx/quaternion.hpp>
 
-    using Components::RectangleRenderer;
-    using Components::Position;
-    using Components::Rect;
-    using Components::Color;
-    using Components::LuaScript;
+namespace SignE::Core::Scene
+{
+using Renderer::Renderer2D;
 
-    using Scripting::LuaScriptEngine;
+using Components::Color;
+using Components::LuaScript;
+using Components::Position;
+using Components::Rect;
+using Components::RectangleRenderer;
 
-    void Scene::OnInit() {
-        Log::LogInfo("OnInit Scene: " + name);
-    }
+using Components::MeshRenderer;
+using Components::Transform;
 
-    void Scene::OnUpdate(float dt) {
-        // Run Lua Scripts 
-        if (!LuaScriptEngine::IsPaused()) {
-            auto view = registry.view<LuaScript>();
-            for (auto entity : view) {
-                auto& luaScript = view.get<LuaScript>(entity);
-                LuaScriptEngine::RunUpdateFunction({ entity, this }, luaScript.code);
-            }
-        }
-    }
+using Scripting::LuaScriptEngine;
 
-    void Scene::OnDraw() {
-        // Draw Rectangles
-        auto view = registry.view<Position, RectangleRenderer>();
-        for(auto entity: view) {
-            auto& rectRenderer = view.get<RectangleRenderer>(entity);
+void Scene::OnInit()
+{
+    Log::LogInfo("OnInit Scene: " + name);
+}
 
-            auto& pos = view.get<Position>(entity);
-            auto& rect = rectRenderer.rect;
-            auto& color = rectRenderer.color;
+void Scene::OnUpdate(float dt)
+{
+    camera->Update(dt);
 
-            Renderer2D::DrawRect(pos.x, pos.y, rect.width, rect.height, color.r, color.g, color.b, color.a);
-        }
-    }
-
-    void Scene::OnShutdown() {
-        Log::LogInfo("OnShutdown Scene: " + name);
-    }
-
-    Entity Scene::CreateEntity(std::string tag) {
-        auto entityHandle = registry.create();
-
-        Entity entity = { entityHandle, this };
-        entityMap[tag] = entityHandle;
-
-        entity.AddComponent<Tag>(tag);
-
-        return entity;
-    }
-
-    Entity Scene::GetEntityByTag(std::string tag) {
-        if (entityMap.find(tag) != entityMap.end())
-            return { entityMap.at(tag), this };
-        return {};
-    }
-
-    std::vector<Entity> Scene::GetAllEntities() {
-        std::vector<Entity> entities;
-
-        auto view = registry.view<Tag>();
-        for (auto entity : view) {
-            entities.push_back({ entity, this });
-        }
-
-        return entities;
+    // Run Lua Scripts
+    if (!LuaScriptEngine::IsPaused())
+    {
+        auto luaScriptFilter = ecsWorld.filter<LuaScript>();
+        luaScriptFilter.each(
+            [this](flecs::entity entity, LuaScript& luaScript) {
+                LuaScriptEngine::RunUpdateFunction({entity, this}, luaScript.code);
+            });
     }
 }
 
+void Scene::OnDraw()
+{
+    // Draw Rectangles
+    auto rectangleRendererFilter = ecsWorld.filter<RectangleRenderer, Position>();
+    rectangleRendererFilter.each(
+        [](flecs::entity entity, RectangleRenderer& rectangleRenderer, Position& position)
+        {
+            auto& rect = rectangleRenderer.rect;
+            auto& color = rectangleRenderer.color;
+
+            Renderer2D::DrawRect(position.x, position.y, rect.width, rect.height, color.r, color.g, color.b, color.a);
+        });
+    // for (auto entity : view)
+    // {
+    //     auto& rectRenderer = view.get<RectangleRenderer>(entity);
+    //
+    //     auto& pos = view.get<Position>(entity);
+    //     auto& rect = rectRenderer.rect;
+    //     auto& color = rectRenderer.color;
+    //
+    //     Renderer2D::DrawRect(pos.x, pos.y, rect.width, rect.height, color.r, color.g, color.b, color.a);
+    // }
+
+    // Draw Models
+
+    // TODO: Add Scene Camera (Maybe both Editor and Game Camera)
+    // auto viewMatrix = glm::lookAt(glm::vec3(0, 0, 3), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+    // auto projectionMatrix = glm::perspective(glm::radians(45.0f), 1280.0f / 720.0f, 0.1f, 100.0f);
+
+    // auto modelView = registry.view<Transform, MeshRenderer>();
+    Renderer::Renderer3D::Begin(camera->GetViewMatrix(), camera->GetProjectionMatrix());
+
+    Renderer::Renderer3D::DrawGrid();
+
+    auto meshRendererFilter = ecsWorld.filter<MeshRenderer, Transform>();
+    meshRendererFilter.each(
+        [](flecs::entity entity, MeshRenderer& meshRenderer, Transform& transform)
+        {
+            auto& modelPath = meshRenderer.modelPath;
+            auto& texturePath = meshRenderer.texturePath;
+
+            if (modelPath.empty() || texturePath.empty())
+                return;
+
+            auto model = Resources::Instance().Load<Model>(modelPath);
+            auto texture = Resources::Instance().Load<Texture>(texturePath);
+
+            auto translationMatrix = glm::translate(glm::mat4(1.0f), transform.position);
+            auto rotationMatrix = glm::toMat4(glm::quat(transform.rotation));
+            auto scaleMatrix = glm::scale(glm::mat4(1.0f), transform.scale);
+
+            auto modelMatrix = translationMatrix * rotationMatrix * scaleMatrix;
+            texture->GetTexture()->Bind();
+            Renderer::Renderer3D::Submit(model, modelMatrix);
+            texture->GetTexture()->Unbind();
+        });
+    // for (auto entity : modelView)
+    // {
+    //     auto& meshRenderer = modelView.get<MeshRenderer>(entity);
+    //     auto& transform = modelView.get<Transform>(entity);
+    //
+    //     if (meshRenderer.modelPath.empty() || meshRenderer.texturePath.empty())
+    //         continue;
+    //
+    //     auto model = Resources::Instance().Load<Model>(meshRenderer.modelPath);
+    //     auto texture = Resources::Instance().Load<Texture>(meshRenderer.texturePath);
+    //
+    //     auto translationMatrix = glm::translate(glm::mat4(1.0f), transform.position);
+    //     auto rotationMatrix = glm::toMat4(glm::quat(transform.rotation));
+    //     auto scaleMatrix = glm::scale(glm::mat4(1.0f), transform.scale);
+    //
+    //     auto modelMatrix = translationMatrix * rotationMatrix * scaleMatrix;
+    //     texture->GetTexture()->Bind();
+    //     Renderer::Renderer3D::Submit(model, modelMatrix);
+    //     texture->GetTexture()->Unbind();
+    // }
+
+    Renderer::Renderer3D::End();
+}
+
+void Scene::OnShutdown()
+{
+    Log::LogInfo("OnShutdown Scene: " + name);
+}
+
+Entity Scene::CreateEntity(std::string tag)
+{
+    auto entityHandle = ecsWorld.entity(tag.c_str());
+
+    Entity entity = {entityHandle, this};
+    entity.AddComponent<Tag>(tag);
+
+    return entity;
+}
+
+Entity Scene::GetEntityByTag(std::string tag)
+{
+    if (auto e = ecsWorld.entity(tag.c_str()); e.is_alive())
+        return {e, this};
+    return {};
+}
+
+std::vector<Entity> Scene::GetAllEntities()
+{
+    std::vector<Entity> entities;
+
+    flecs::filter f = ecsWorld.filter<Tag>();
+    f.each([&](flecs::entity e, Tag& tag) { entities.push_back({e, this}); });
+    return entities;
+}
+} // namespace SignE::Core::Scene

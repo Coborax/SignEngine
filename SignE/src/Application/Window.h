@@ -21,12 +21,19 @@ public:
     void EndImGuiFrame() const;
 
     GLFWwindow* GetNativeWindow() const { return window; }
+    float GetTime() const { return glfwGetTime(); }
+
+    int GetWidth() const { return width; }
+    int GetHeight() const { return height; }
+
+    void SetCaptureMouse(bool capture); 
 private:
     std::string title;
     int width;
     int height;
 
     GLFWwindow* window;
+    bool captureMouse = false;
 };
 
 } // namespace SignE::Application

@@ -29,9 +29,12 @@ public:
     virtual void Clear() = 0;
 
     virtual void DrawIndexed(const Ref<VertexArray>& vertexArray) = 0;
+    virtual void DrawIndexedLines(const Ref<VertexArray>& vertexArray) = 0;
 
     virtual void BeginImGuiFrame() = 0;
     virtual void EndImGuiFrame() = 0;
+
+    virtual void SetViewport(int x, int y, int width, int height) = 0;
 
     static void SetAPI(RenderAPI api)
     {
@@ -57,11 +60,14 @@ public:
     static void Clear();
 
     static void DrawIndexed(const Ref<VertexArray>& vertexArray);
+    static void DrawIndexedLines(const Ref<VertexArray>& vertexArray);
 
     static void Create(RenderAPI api);
 
     static void BeginImGuiFrame();
     static void EndImGuiFrame();
+
+    static void SetViewport(int x, int y, int width, int height);
 
 private:
     static Unique<Renderer> renderer;

@@ -7,8 +7,9 @@
 
 
 #include <string>
+#include <flecs.h>
+
 #include "Scene/SceneSerializer.h"
-#include "entt/entt.hpp"
 #include "Scene.h"
 #include "Components.h"
 #include "Log.h"
@@ -19,41 +20,45 @@ namespace SignE::Core::Scene {
     class Entity {
     public:
         Entity() = default;
-        Entity(entt::entity entityHandle, Scene* scene) : entityHandle(entityHandle), scene(scene) {};
+        Entity(flecs::entity entityHandle, Scene* scene) : entityHandle(entityHandle), scene(scene) {};
 
         template<typename T, typename... Args>
         T& AddComponent(Args&&... args) {
-            return scene->registry.emplace<T>(entityHandle, std::forward<Args>(args)...);
+            T component(std::forward<Args>(args)...); 
+            entityHandle.set<T>(component);
+            return *entityHandle.get_mut<T>();
+        }
+
+        template<typename T>
+        void RemoveComponent() {
+            entityHandle.remove<T>();
         }
 
         template<typename T>
         T& GetComponent() {
-            return scene->registry.get<T>(entityHandle);
+            return *entityHandle.get_mut<T>();
         }
 
         template<typename T>
         bool HasComponent() {
-            return scene->registry.any_of<T>(entityHandle);
+            return entityHandle.has<T>();
         }
 
         std::string GetTag() {
-            if (HasComponent<Tag>()) {
-                return GetComponent<Tag>().tag;
-            }
-            return "";
+            return entityHandle.name().c_str();
         }
 
         bool IsValid() {
             if (scene == nullptr) {
                 return false;
             }
-            return scene->registry.valid(entityHandle);
+            return entityHandle.is_valid() && entityHandle.is_alive();
         }
 
         friend class SceneSerializer;
 
     private:
-        entt::entity entityHandle;
+        flecs::entity entityHandle;
         Scene* scene;
     };
 }

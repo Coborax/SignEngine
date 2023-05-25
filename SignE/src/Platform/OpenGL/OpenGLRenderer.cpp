@@ -3,6 +3,7 @@
 #include "Renderer/VertexArray.h"
 #include "Renderer/IndexBuffer.h"
 
+
 #include <imgui.h>
 #include <imgui_impl_opengl3.h>
 
@@ -18,6 +19,7 @@ void OpenGLRenderer::Init()
     }
 
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_DEBUG_OUTPUT);
 
     ImGui_ImplOpenGL3_Init();
 }
@@ -37,6 +39,11 @@ void OpenGLRenderer::DrawIndexed(const Ref<VertexArray>& vertexArray)
     glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 }
 
+void OpenGLRenderer::DrawIndexedLines(const Ref<VertexArray>& vertexArray)
+{
+    glDrawElements(GL_LINES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+}
+
 void OpenGLRenderer::BeginImGuiFrame()
 {
     ImGui_ImplOpenGL3_NewFrame();
@@ -45,6 +52,11 @@ void OpenGLRenderer::BeginImGuiFrame()
 void OpenGLRenderer::EndImGuiFrame()
 {
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+void OpenGLRenderer::SetViewport(int x, int y, int width, int height)
+{
+    glViewport(x, y, width, height);
 }
 
 } // namespace SignE::Core::Renderer

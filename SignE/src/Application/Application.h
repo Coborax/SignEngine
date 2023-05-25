@@ -29,6 +29,8 @@ namespace SignE::Core::Application {
         bool running = false;
         std::string name;
         static Ref<Window> window;
+        float lastFrameTime = 0.0f;
+        static float deltaTime;
     };
 }
 

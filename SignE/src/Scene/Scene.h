@@ -5,7 +5,6 @@
 #ifndef SIGNEPROJECT_SCENE_H
 #define SIGNEPROJECT_SCENE_H
 
-#include <flecs/addons/cpp/mixins/rest/decl.hpp>
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/fwd.hpp>
@@ -42,8 +41,6 @@ public:
     virtual void SetRotation(const glm::vec3& rotation) = 0;
 
     virtual void SetViewportSize(float width, float height) = 0;
-
-    virtual void Update(float dt) = 0;
 };
 
 class PerspectiveCamera : public Camera
@@ -63,63 +60,9 @@ public:
         aspectRatio = width / height;
     }
 
-private:
-    float fov = 45.0f;
-    float aspectRatio = 1280.0f / 720.0f;
-    float near = 0.1f;
-    float far = 100.0f;
-};
-
-class FPSCamera : public PerspectiveCamera
-{
-public:
     glm::mat4 GetViewMatrix() const override
     {
         return glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
-    }
-
-    void Update(float dt) override
-    {
-        auto deltaSpeed = cameraSpeed * dt;
-
-        if (Input::Input::IsKeyPressed(Input::KeyCode::W))
-            cameraPosition += deltaSpeed * cameraFront;
-        if (Input::Input::IsKeyPressed(Input::KeyCode::S))
-            cameraPosition -= deltaSpeed * cameraFront;
-        if (Input::Input::IsKeyPressed(Input::KeyCode::A))
-            cameraPosition -= glm::normalize(glm::cross(cameraFront, cameraUp)) * deltaSpeed;
-        if (Input::Input::IsKeyPressed(Input::KeyCode::D))
-            cameraPosition += glm::normalize(glm::cross(cameraFront, cameraUp)) * deltaSpeed;
-
-        if (Input::Input::IsKeyPressed(Input::KeyCode::Space))
-            cameraPosition += deltaSpeed * cameraUp;
-        if (Input::Input::IsKeyPressed(Input::KeyCode::LeftControl))
-            cameraPosition -= deltaSpeed * cameraUp;
-
-        if (Input::Input::IsKeyPressed(Input::KeyCode::LeftShift))
-            cameraSpeed = 10.0f;
-        else
-            cameraSpeed = 5.0f;
-
-        Application::Application::GetWindow()->SetCaptureMouse(Input::Input::IsMouseButtonPressed(1));
-        if (!Input::Input::IsMouseButtonPressed(1))
-            return;
-
-        auto [mouseDeltaX, mouseDeltaY] = Input::Input::GetMouseDelta();
-        yaw += mouseDeltaX * cameraSensitivity;
-        pitch += mouseDeltaY * cameraSensitivity;
-
-        if (pitch > 89.0f)
-            pitch = 89.0f;
-
-        if (pitch < -89.0f)
-            pitch = -89.0f;
-
-        glm::vec3 direction;
-        direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-        direction.y = sin(glm::radians(pitch));
-        direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-        cameraFront = glm::normalize(direction);
     }
 
     glm::vec3 GetPosition() const override
@@ -143,22 +86,105 @@ public:
     }
 
 private:
+    float fov = 45.0f;
+    float aspectRatio = 1280.0f / 720.0f;
+    float near = 0.1f;
+    float far = 100.0f;
+
     glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
     glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-
-    float cameraSpeed = 5.0f;
-    float cameraSensitivity = 0.1f;
-
-    float yaw = -90.0f;
-    float pitch = 0.0f;
 };
+
+// class FPSCamera : public PerspectiveCamera
+// {
+// public:
+//     glm::mat4 GetViewMatrix() const override
+//     {
+//         return glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
+//     }
+//
+//     void Update(float dt) override
+//     {
+//         auto deltaSpeed = cameraSpeed * dt;
+//
+//         if (Input::Input::IsKeyPressed(Input::KeyCode::W))
+//             cameraPosition += deltaSpeed * cameraFront;
+//         if (Input::Input::IsKeyPressed(Input::KeyCode::S))
+//             cameraPosition -= deltaSpeed * cameraFront;
+//         if (Input::Input::IsKeyPressed(Input::KeyCode::A))
+//             cameraPosition -= glm::normalize(glm::cross(cameraFront, cameraUp)) * deltaSpeed;
+//         if (Input::Input::IsKeyPressed(Input::KeyCode::D))
+//             cameraPosition += glm::normalize(glm::cross(cameraFront, cameraUp)) * deltaSpeed;
+//
+//         if (Input::Input::IsKeyPressed(Input::KeyCode::Space))
+//             cameraPosition += deltaSpeed * cameraUp;
+//         if (Input::Input::IsKeyPressed(Input::KeyCode::LeftControl))
+//             cameraPosition -= deltaSpeed * cameraUp;
+//
+//         if (Input::Input::IsKeyPressed(Input::KeyCode::LeftShift))
+//             cameraSpeed = 10.0f;
+//         else
+//             cameraSpeed = 5.0f;
+//
+//         Application::Application::GetWindow()->SetCaptureMouse(Input::Input::IsMouseButtonPressed(1));
+//         if (!Input::Input::IsMouseButtonPressed(1))
+//             return;
+//
+//         auto [mouseDeltaX, mouseDeltaY] = Input::Input::GetMouseDelta();
+//         yaw += mouseDeltaX * cameraSensitivity;
+//         pitch += mouseDeltaY * cameraSensitivity;
+//
+//         if (pitch > 89.0f)
+//             pitch = 89.0f;
+//
+//         if (pitch < -89.0f)
+//             pitch = -89.0f;
+//
+//         glm::vec3 direction;
+//         direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+//         direction.y = sin(glm::radians(pitch));
+//         direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+//         cameraFront = glm::normalize(direction);
+//     }
+//
+//     glm::vec3 GetPosition() const override
+//     {
+//         return cameraPosition;
+//     }
+//
+//     glm::vec3 GetRotation() const override
+//     {
+//         return cameraFront;
+//     }
+//
+//     void SetPosition(const glm::vec3& position) override
+//     {
+//         cameraPosition = position;
+//     }
+//
+//     void SetRotation(const glm::vec3& rotation) override
+//     {
+//         cameraFront = rotation;
+//     }
+//
+// private:
+//     glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 0.0f);
+//     glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+//     glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+//
+//     float cameraSpeed = 5.0f;
+//     float cameraSensitivity = 0.1f;
+//
+//     float yaw = -90.0f;
+//     float pitch = 0.0f;
+// };
 
 class Scene
 {
 public:
-    Scene() : name("Scene"), camera(CreateRef<FPSCamera>()){};
-    Scene(std::string name) : name(std::move(name)), camera(CreateRef<FPSCamera>()){};
+    Scene() : name("Scene"), camera(CreateRef<PerspectiveCamera>()){};
+    Scene(std::string name) : name(std::move(name)), camera(CreateRef<PerspectiveCamera>()){};
 
     void OnInit();
     void OnUpdate(float dt);
@@ -172,6 +198,11 @@ public:
     Ref<Camera> GetCamera() const
     {
         return camera;
+    }
+
+    void SetCamera(Ref<Camera> camera)
+    {
+        this->camera = camera;
     }
 
     friend class Entity;

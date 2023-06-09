@@ -45,6 +45,7 @@ OpenGLTexture::OpenGLTexture(const std::string& path) : path(path)
     stbi_image_free(data);
 }
 
+
 OpenGLTexture::~OpenGLTexture()
 {
     glDeleteTextures(1, &rendererID);

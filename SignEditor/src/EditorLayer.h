@@ -7,9 +7,13 @@
 
 
 #include "Application/ImGuiLayer.h"
+#include "Renderer/Framebuffer.h"
 #include "Scene/Entity.h"
+#include "Scene/Scene.h"
 #include <ImGuizmo.h>
+#include <imgui.h>
 #include <memory>
+#include <vector>
 
 namespace SignE::Core::Renderer {
     class Framebuffer;
@@ -19,6 +23,13 @@ namespace SignE::Editor::Application {
     using SignE::Core::Scene::Scene;
     using SignE::Core::Scene::Entity;
     using SignE::Core::Application::ImGuiLayer;
+
+    struct EditorViewport {
+        Ref<Core::Renderer::Framebuffer> framebuffer;
+        Ref<Core::Scene::Camera> camera;
+        float pitch = 0.0f, yaw = 0.0f;
+        bool isActive = true;
+    };
 
     class EditorLayer : public ImGuiLayer {
     public:
@@ -32,9 +43,11 @@ namespace SignE::Editor::Application {
         void DrawScene();
         void DrawGrid();
     private:
-        Ref<Core::Renderer::Framebuffer> framebuffer;
         Ref<Scene> editorScene;
         Ref<Scene> playScene;
+
+        std::vector<EditorViewport> viewports;
+        int activeViewportIndex = 0;
 
         Entity selectedEntity;
         ImGuizmo::MODE gizmoMode = ImGuizmo::MODE::LOCAL;

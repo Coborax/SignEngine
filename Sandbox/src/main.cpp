@@ -12,6 +12,8 @@
 #include "Renderer/VertexArray.h"
 #include "Resources/Model.h"
 #include "Renderer/Renderer3D.h"
+#include "Scene/Entity.h"
+#include "Scene/Scene.h"
 #include "tiny_obj_loader.h"
 
 namespace SignE::Sandbox::Application
@@ -27,48 +29,12 @@ public:
 
     void OnInit() override
     {
-        // models.push_back(Core::Resources::Instance().Load<Core::Model>("models/Cube.obj"));
-        // models.push_back(Core::Resources::Instance().Load<Core::Model>("models/bunny.obj"));
-        // models.push_back(Core::Resources::Instance().Load<Core::Model>("models/snickle.obj"));
-        // models.push_back(Core::Resources::Instance().Load<Core::Model>("models/female.obj"));
-        models.push_back(Core::Resources::Instance().Load<Core::Model>("models/keytruck/keytruck.obj"));
-        textures.push_back(Core::Renderer::Texture::Create("models/keytruck/keytruck.png"));
+        SetActiveScene(CreateRef<Core::Scene::Scene>());
 
-        // models.push_back(Core::Resources::Instance().Load<Core::Model>("models/Sword/Sword.obj"));
-        // textures.push_back(Core::Renderer::Texture::Create("models/Sword/Textures/Color.png"));
-
-        models.push_back(Core::Resources::Instance().Load<Core::Model>("models/VikingRoom/viking_room.obj"));
-        textures.push_back(Core::Renderer::Texture::Create("models/VikingRoom/viking_room.png"));
+        auto sphere = ActiveScene->CreateEntity("Sphere");
     }
-
-    void OnUpdate(float deltaTime) override
-    {
-    }
-
-    void OnDraw() override
-    {
-        glm::mat4 viewMatrix =
-            glm::lookAt(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-
-        glm::mat3 projectionMatrix = glm::perspective(glm::radians(45.0f),
-                                                      (float) Core::Application::Application::GetWindow()->GetWidth() /
-                                                          (float) Core::Application::Application::GetWindow()->GetHeight(),
-                                                      0.1f, 100.0f);
-
-        Core::Renderer::Renderer3D::Begin(viewMatrix, projectionMatrix);
-        for (auto& model : models)
-        {
-            Core::Renderer::Renderer3D::Submit(model);
-        }
-        Core::Renderer::Renderer3D::End();
-    }
-
-    void OnShutdown() override
-    {}
 
 private:
-    std::vector<Ref<Core::Model>> models;
-    std::vector<Ref<Core::Renderer::Texture>> textures;
 };
 
 // class DebugLayer : public ImGuiLayer

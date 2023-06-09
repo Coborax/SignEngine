@@ -8,22 +8,27 @@
 namespace SignE::Core
 {
 
-class Resource
+class Asset
 {
 public:
-    Resource() = default;
-    virtual ~Resource() = default;
+    Asset(const std::string& path) : absolutePath(path), name(path.substr(path.find_last_of("/\\") + 1)) {};
+    virtual ~Asset() = default;
 
-    virtual void Load(const std::string& path) = 0;
+    virtual void Load() = 0;
     virtual void Cleanup() = 0;
 
+    const std::string& GetPath() const { return absolutePath; }
+    const std::string& GetName() const { return name; }
 private:
+    std::string absolutePath;
     std::string name;
 };
 
 class Resources
 {
 public:
+    void Init();
+
     template<typename T>
     Ref<T> Load(const std::string& path);
 
@@ -37,7 +42,7 @@ public:
     }
 
 private:
-    std::unordered_map<std::string, Ref<Resource>> resources;
+    std::unordered_map<std::string, Ref<Asset>> resources;
 };
 } // namespace SignE::Core
 

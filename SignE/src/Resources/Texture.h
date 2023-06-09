@@ -7,26 +7,30 @@
 
 namespace SignE::Core::Renderer
 {
-    class Texture;
+class Texture;
 }
 
-namespace SignE::Core {
-using RenderTexture = Renderer::Texture;
+namespace SignE::Core
+{
 
-class Texture : public Resource
+class TextureAsset : public Asset
 {
 public:
-    Texture() = default;
-    ~Texture() = default;
+    TextureAsset(const std::string path) : Asset(path){};
+    ~TextureAsset() = default;
 
-    void Load(const std::string& path) override;
+    void Load() override;
     void Cleanup() override;
 
-    Ref<RenderTexture> GetTexture() const { return texture; }
+    Ref<Renderer::Texture> GetTexture() const
+    {
+        return texture;
+    }
+
 private:
-    Ref<RenderTexture> texture;
+    Ref<Renderer::Texture> texture;
 };
 
-}
+} // namespace SignE::Core
 
 #endif // !#ifndef TEXTURE_H

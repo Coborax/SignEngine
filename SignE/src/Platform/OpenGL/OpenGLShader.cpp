@@ -24,10 +24,10 @@ unsigned int OpenGLShader::CompileShader(const std::string& source, unsigned int
         int length;
         glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
 
-        // char* message = (char*) alloca(length * sizeof(char));
-        // glGetShaderInfoLog(id, length, &length, message);
+        char* message = (char*) alloca(length * sizeof(char));
+        glGetShaderInfoLog(id, length, &length, message);
         Log::LogError("Failed to compile vertex shader!");
-        // std::cout << message << std::endl;
+        Log::LogError(message);
         glDeleteShader(id);
         return 0;
     }
@@ -77,6 +77,11 @@ void OpenGLShader::SetIntArray(const std::string& name, int* values, uint32_t co
     glUniform1iv(glGetUniformLocation(rendererID, name.c_str()), count, values);
 }
 
+void OpenGLShader::SetBool(const std::string& name, bool value)
+{
+    glUniform1i(glGetUniformLocation(rendererID, name.c_str()), value);
+}
+
 void OpenGLShader::SetFloat(const std::string& name, float value)
 {
     glUniform1f(glGetUniformLocation(rendererID, name.c_str()), value);
@@ -100,6 +105,11 @@ void OpenGLShader::SetFloat4(const std::string& name, const glm::vec4& value)
 void OpenGLShader::SetMat4(const std::string& name, const glm::mat4& value)
 {
     glUniformMatrix4fv(glGetUniformLocation(rendererID, name.c_str()), 1, GL_FALSE, glm::value_ptr(value));
+}
+
+void OpenGLShader::SetFloat3Array(const std::string& name, const glm::vec3* values, uint32_t count)
+{
+    glUniform3fv(glGetUniformLocation(rendererID, name.c_str()), count, glm::value_ptr(values[0]));
 }
 
 

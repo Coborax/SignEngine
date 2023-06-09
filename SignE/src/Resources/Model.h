@@ -29,26 +29,41 @@ struct Vertex
 //     std::vector<Vertex> vertices;
 //     std::vector<unsigned int> indices;
 // };
+//
+enum PrimitiveType
+{
+    None,
+    Cube,
+    Plane,
+    Sphere
+};
 
-class Model : public Resource
+class Model : public Asset
 {
 public:
-    Model() = default;
+    Model(const std::string path) : type(PrimitiveType::None), Asset(path){};
+    Model(PrimitiveType type) : type(type), Asset("Primitive"){};
     ~Model() = default;
 
-    void Load(const std::string& path) override;
+    void Load() override;
     void Cleanup() override;
 
-    Ref<Renderer::VertexArray> GetVertexArray() const { return vertexArray; }
+    Ref<Renderer::VertexArray> GetVertexArray() const
+    {
+        return vertexArray;
+    }
 
 private:
-    // std::vector<Mesh> meshes;
+    PrimitiveType type;
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
 
     Ref<Renderer::VertexArray> vertexArray;
     Ref<Renderer::VertexBuffer> vertexBuffer;
     Ref<Renderer::IndexBuffer> indexBuffer;
+
+    void LoadSphere();
+    void LoadModel();
 };
 
 } // namespace SignE::Core

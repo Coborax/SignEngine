@@ -13,6 +13,7 @@
 #include "Ref.h"
 #include "Renderer/Renderer.h"
 #include "Input/Input.h"
+#include "Resources/Resources.h"
 
 namespace SignE::Core::Application {
     using namespace SignE::Core::Scripting;
@@ -33,7 +34,7 @@ namespace SignE::Core::Application {
         Renderer::RenderCommand::Create(Renderer::RenderAPI::OpenGL);
 
         Log::LogInfo("Initializing Window");
-        window = CreateRef<Window>(name, 1280, 720);
+        window = CreateRef<Window>(name, 1920, 1080);
 
 
         Log::LogInfo("Initializing Renderer");
@@ -41,6 +42,9 @@ namespace SignE::Core::Application {
         Renderer::RenderCommand::SetClearColor(0.1f, 0.1f, 0.15f, 1.0f);
         Renderer::Renderer2D::Init();
         Renderer::Renderer3D::Init();
+
+        Log::LogInfo("Initializing Resources");
+        Resources::Instance().Init();
 
         Log::LogInfo("Initializing Lua Scripting Engine");
         LuaScriptEngine::Init();

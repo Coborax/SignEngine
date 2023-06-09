@@ -6,6 +6,7 @@
 #define SIGNEPROJECT_COMPONENTS_H
 
 #include "Ref.h"
+#include "Resources/Texture.h"
 
 #include <glm/glm.hpp>
 #include <string>
@@ -108,15 +109,56 @@ struct Transform
 
 struct MeshRenderer
 {
-    std::string modelPath;
-    std::string texturePath;
+    Ref<Model> model;
+    Ref<TextureAsset> texture;
+
+    // TODO: Wrap in material
+    glm::vec3 albedo = glm::vec3(1, 1, 1);
+    float metallic = 0.0f;
+    float roughness = 0.0f;
+    float ao = 1.0f;
+
+    bool useTxtures = true;
+    Ref<TextureAsset> albedoTexture;
+    Ref<TextureAsset> metallicTexture;
+    Ref<TextureAsset> roughnessTexture;
+    Ref<TextureAsset> aoTexture;
 
     MeshRenderer()
     {}
 
-    MeshRenderer(const std::string& modelPath, const std::string& texturePath)
-        : modelPath(modelPath), texturePath(texturePath)
+    MeshRenderer(const Ref<Model>& model, const Ref<TextureAsset>& texture)
+        : model(model), texture(texture)
     {}
+
+    MeshRenderer(const Ref<Model>& model, const Ref<TextureAsset>& texture, const glm::vec3& albedo, float metallic,
+                 float roughness, float ao)
+        : model(model), texture(texture), albedo(albedo), metallic(metallic), roughness(roughness), ao(ao)
+    {}
+
+    MeshRenderer(const Ref<Model>& model, const Ref<TextureAsset>& albedoTexture,
+                 const Ref<TextureAsset>& metallicTexture, const Ref<TextureAsset>& roughnessTexture,
+                 const Ref<TextureAsset>& aoTexture)
+        : model(model), albedoTexture(albedoTexture), metallicTexture(metallicTexture),
+          roughnessTexture(roughnessTexture), aoTexture(aoTexture)
+    {}
+};
+
+struct Light
+{
+    glm::vec3 color = glm::vec3(1, 1, 1);
+    float intensity = 1.0f;
+
+    Light()
+    {}
+
+    Light(const glm::vec3& color, float intensity) : color(color), intensity(intensity)
+    {}
+
+    glm::vec3 GetColor() const
+    {
+        return color * intensity;
+    }
 };
 
 } // namespace SignE::Core::Scene::Components

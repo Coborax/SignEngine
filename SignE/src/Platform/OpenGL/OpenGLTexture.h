@@ -12,6 +12,7 @@ class OpenGLTexture : public Texture
 {
 public:
     OpenGLTexture(const std::string& path);
+
     ~OpenGLTexture();
 
     void Bind(unsigned int slot = 0) const override;

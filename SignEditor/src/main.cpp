@@ -10,6 +10,7 @@ namespace SignE::Editor::Application {
         SignEditorApplication() : Application("SignEditor") {
             Core::VFS::Instance().Mount("/Users/cobo/Dev/GlobalAssets/scenes", "scenes");
             Core::VFS::Instance().Mount("/Users/cobo/Dev/GlobalAssets/models", "models");
+            Core::VFS::Instance().Mount("/Users/cobo/Dev/GlobalAssets/textures", "textures");
             PushLayer(&editorLayer);
         }
 

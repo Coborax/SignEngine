@@ -11,6 +11,7 @@
 #include "../Renderer/Renderer2D.h"
 #include "../Renderer/Renderer3D.h"
 #include "../Renderer/Renderer.h"
+#include "Log.h"
 #include "Renderer/Texture.h"
 #include "Resources/Resources.h"
 #include "Entity.h"
@@ -43,8 +44,6 @@ void Scene::OnInit()
 
 void Scene::OnUpdate(float dt)
 {
-    camera->Update(dt);
-
     // Run Lua Scripts
     if (!LuaScriptEngine::IsPaused())
     {
@@ -84,9 +83,15 @@ void Scene::OnDraw()
     // TODO: Add Scene Camera (Maybe both Editor and Game Camera)
     // auto viewMatrix = glm::lookAt(glm::vec3(0, 0, 3), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
     // auto projectionMatrix = glm::perspective(glm::radians(45.0f), 1280.0f / 720.0f, 0.1f, 100.0f);
+    //
+
+    // Set lights
+    auto lightFilter = ecsWorld.filter<Light, Transform>();
+    lightFilter.each([](flecs::entity entity, Light& light, Transform& transform)
+                     { Renderer::Renderer3D::AddLight(transform.position, light.GetColor()); });
 
     // auto modelView = registry.view<Transform, MeshRenderer>();
-    Renderer::Renderer3D::Begin(camera->GetViewMatrix(), camera->GetProjectionMatrix());
+    Renderer::Renderer3D::Begin(camera->GetViewMatrix(), camera->GetProjectionMatrix(), camera->GetPosition());
 
     Renderer::Renderer3D::DrawGrid();
 
@@ -94,44 +99,25 @@ void Scene::OnDraw()
     meshRendererFilter.each(
         [](flecs::entity entity, MeshRenderer& meshRenderer, Transform& transform)
         {
-            auto& modelPath = meshRenderer.modelPath;
-            auto& texturePath = meshRenderer.texturePath;
-
-            if (modelPath.empty() || texturePath.empty())
-                return;
-
-            auto model = Resources::Instance().Load<Model>(modelPath);
-            auto texture = Resources::Instance().Load<Texture>(texturePath);
+            auto model = meshRenderer.model;
 
             auto translationMatrix = glm::translate(glm::mat4(1.0f), transform.position);
             auto rotationMatrix = glm::toMat4(glm::quat(transform.rotation));
             auto scaleMatrix = glm::scale(glm::mat4(1.0f), transform.scale);
 
             auto modelMatrix = translationMatrix * rotationMatrix * scaleMatrix;
-            texture->GetTexture()->Bind();
-            Renderer::Renderer3D::Submit(model, modelMatrix);
-            texture->GetTexture()->Unbind();
+
+            if (meshRenderer.useTxtures)
+            {
+                Renderer::Renderer3D::Submit(model, modelMatrix, meshRenderer.albedoTexture->GetTexture(), meshRenderer.metallicTexture->GetTexture(),
+                                             meshRenderer.roughnessTexture->GetTexture(), meshRenderer.aoTexture->GetTexture());
+            }
+            else
+            {
+                Renderer::Renderer3D::Submit(model, modelMatrix, meshRenderer.albedo, meshRenderer.metallic,
+                                             meshRenderer.roughness, meshRenderer.ao);
+            }
         });
-    // for (auto entity : modelView)
-    // {
-    //     auto& meshRenderer = modelView.get<MeshRenderer>(entity);
-    //     auto& transform = modelView.get<Transform>(entity);
-    //
-    //     if (meshRenderer.modelPath.empty() || meshRenderer.texturePath.empty())
-    //         continue;
-    //
-    //     auto model = Resources::Instance().Load<Model>(meshRenderer.modelPath);
-    //     auto texture = Resources::Instance().Load<Texture>(meshRenderer.texturePath);
-    //
-    //     auto translationMatrix = glm::translate(glm::mat4(1.0f), transform.position);
-    //     auto rotationMatrix = glm::toMat4(glm::quat(transform.rotation));
-    //     auto scaleMatrix = glm::scale(glm::mat4(1.0f), transform.scale);
-    //
-    //     auto modelMatrix = translationMatrix * rotationMatrix * scaleMatrix;
-    //     texture->GetTexture()->Bind();
-    //     Renderer::Renderer3D::Submit(model, modelMatrix);
-    //     texture->GetTexture()->Unbind();
-    // }
 
     Renderer::Renderer3D::End();
 }
@@ -143,7 +129,7 @@ void Scene::OnShutdown()
 
 Entity Scene::CreateEntity(std::string tag)
 {
-    auto entityHandle = ecsWorld.entity(tag.c_str());
+    auto entityHandle = ecsWorld.entity();
 
     Entity entity = {entityHandle, this};
     entity.AddComponent<Tag>(tag);

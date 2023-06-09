@@ -44,8 +44,14 @@ namespace SignE::Core::Scene {
             return entityHandle.has<T>();
         }
 
-        std::string GetTag() {
-            return entityHandle.name().c_str();
+        std::string& GetTag() {
+            if (entityHandle.has<Tag>()) {
+                return entityHandle.get_mut<Tag>()->tag;
+            }
+            else {
+                entityHandle.set<Tag>(Tag());
+                return entityHandle.get_mut<Tag>()->tag;
+            }
         }
 
         bool IsValid() {

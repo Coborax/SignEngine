@@ -1,5 +1,7 @@
 #include "SceneSerializer.h"
 
+#include "Resources/Model.h"
+#include "Resources/Resources.h"
 #include "Scene.h"
 #include "Entity.h"
 #include "Scene/Components.h"
@@ -179,10 +181,10 @@ void SceneSerializer::Deserialize(const std::string& filepath)
             out << YAML::Value << YAML::BeginMap;
 
             out << YAML::Key << "ModelPath";
-            out << YAML::Value << entity.GetComponent<MeshRenderer>().modelPath;
+            out << YAML::Value << entity.GetComponent<MeshRenderer>().model->GetPath();
 
             out << YAML::Key << "TexturePath";
-            out << YAML::Value << entity.GetComponent<MeshRenderer>().texturePath;
+            out << YAML::Value << entity.GetComponent<MeshRenderer>().texture->GetPath();
 
             out << YAML::EndMap;
         }
@@ -267,8 +269,10 @@ void SceneSerializer::Serialize(const std::string& filepath)
         if (components["MeshRenderer"])
         {
             auto meshRenderer = components["MeshRenderer"];
-            newEntity.AddComponent<MeshRenderer>(meshRenderer["ModelPath"].as<std::string>(),
-                                                 meshRenderer["TexturePath"].as<std::string>());
+            auto modelPath = meshRenderer["ModelPath"].as<std::string>();
+            auto texturePath = meshRenderer["TexturePath"].as<std::string>();
+            newEntity.AddComponent<MeshRenderer>(Resources::Instance().Load<Model>(modelPath),
+                                                 Resources::Instance().Load<TextureAsset>(texturePath));
         }
     }
 }

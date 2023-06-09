@@ -6,6 +6,14 @@
 
 namespace SignE::Core {
 
+    void Resources::Init()
+    {
+        Ref<Model> defaultSphere = CreateRef<Model>(PrimitiveType::Sphere); 
+        defaultSphere->Load();
+        resources["Sphere"] = defaultSphere;
+
+        Log::LogInfo("Resources initialized");
+    }
 
     template<typename T>
     Ref<T> Resources::Load(const std::string& path)
@@ -16,10 +24,8 @@ namespace SignE::Core {
         }
         else
         {
-            Ref<T> resource = CreateRef<T>();
-
-            auto absolutePath = VFS::Instance().GetAbsolutePath(path);
-            resource->Load(absolutePath);
+            Ref<T> resource = CreateRef<T>(path);
+            resource->Load();
 
             resources[path] = resource;
             return resource;
@@ -39,6 +45,6 @@ namespace SignE::Core {
     template Ref<Model> Resources::Load<Model>(const std::string& path);
     template void Resources::Unload<Model>(const std::string& path);
 
-    template Ref<Texture> Resources::Load<Texture>(const std::string& path);
-    template void Resources::Unload<Texture>(const std::string& path);
+    template Ref<TextureAsset> Resources::Load<TextureAsset>(const std::string& path);
+    template void Resources::Unload<TextureAsset>(const std::string& path);
 }

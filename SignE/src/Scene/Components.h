@@ -131,6 +131,11 @@ struct MeshRenderer
         : model(model), texture(texture)
     {}
 
+    MeshRenderer(const Ref<Model>& model, const glm::vec3& albedo, float metallic,
+                 float roughness, float ao)
+        : model(model), albedo(albedo), metallic(metallic), roughness(roughness), ao(ao), useTxtures(false)
+    {}
+
     MeshRenderer(const Ref<Model>& model, const Ref<TextureAsset>& texture, const glm::vec3& albedo, float metallic,
                  float roughness, float ao)
         : model(model), texture(texture), albedo(albedo), metallic(metallic), roughness(roughness), ao(ao)

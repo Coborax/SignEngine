@@ -2,6 +2,9 @@
 #define RENDERTEXTURE_H
 
 #include "Ref.h"
+
+#include <string>
+
 namespace SignE::Core::Renderer
 {
 

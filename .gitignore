@@ -12,6 +12,14 @@
 .idea/**/dictionaries
 .idea/**/shelf
 
+.idea/vcs.xml
+.idea/SignEngine.iml
+.idea/modules.xml
+.idea/misc.xml
+.idea/codeStyles/Project.xml
+.idea/codeStyles/codeStyleConfig.xml
+.idea/.name
+
 # AWS User-specific
 .idea/**/aws.xml
 

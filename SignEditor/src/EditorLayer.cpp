@@ -20,7 +20,6 @@
 #include "Scene/SceneSerializer.h"
 #include "Renderer/Framebuffer.h"
 
-#include <_types/_uint32_t.h>
 #include <glm/glm.hpp>
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
@@ -123,7 +122,7 @@ void EditorLayer::DrawUI()
 
         if (ImGui::BeginMenu("Tools"))
         {
-            if (ImGui::MenuItem("Add PBR Example Spheres"))
+            if (ImGui::MenuItem("Add PBR Example Spheres and Lights"))
             {
                 for (int i = 0; i < 5; i++)
                 {
@@ -139,17 +138,16 @@ void EditorLayer::DrawUI()
                         entity.AddComponent<Transform>(pos, glm::vec3(0.0f), glm::vec3(1.0f));
                         entity.AddComponent<MeshRenderer>(
                             Core::Resources::Instance().Load<Core::Model>("Sphere"),
-                            Core::Resources::Instance().Load<Core::TextureAsset>("models/keytruck/keytruck.png"),
                             albedo, metallic, roughness, ao);
                     }
                 }
-                // for (int i = 0; i < 4; i++)
-                // {
-                //     auto entity = editorScene->CreateEntity("Light" + std::to_string(i));
-                //     auto pos = glm::vec3(10.0f, 10.0f, 10.0f);
-                //     entity.AddComponent<Transform>(pos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f));
-                //     entity.AddComponent<Core::Scene::Components::Light>(glm::vec3(1.0f, 1.0f, 1.0f), 300.0f);
-                // }
+                 for (int i = 0; i < 4; i++)
+                 {
+                     auto entity = editorScene->CreateEntity("Light" + std::to_string(i));
+                     auto pos = glm::vec3(10.0f, 10.0f, 10.0f);
+                     entity.AddComponent<Transform>(pos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f));
+                     entity.AddComponent<Core::Scene::Components::Light>(glm::vec3(1.0f, 1.0f, 1.0f), 300.0f);
+                 }
             }
             if (ImGui::MenuItem("Add Truck"))
             {

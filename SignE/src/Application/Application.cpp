@@ -14,6 +14,7 @@
 #include "Renderer/Renderer.h"
 #include "Input/Input.h"
 #include "Resources/Resources.h"
+#include "ScriptEngine.h"
 
 namespace SignE::Core::Application {
     using namespace SignE::Core::Scripting;
@@ -47,7 +48,7 @@ namespace SignE::Core::Application {
         Resources::Instance().Init();
 
         Log::LogInfo("Initializing Lua Scripting Engine");
-        LuaScriptEngine::Init();
+        ScriptEngine::Init();
 
         for (ApplicationLayer* layer: layers) {
             layer->OnInit();

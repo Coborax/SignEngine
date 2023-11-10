@@ -2,6 +2,7 @@
 #define LUASCRIPTENGINE_H
 
 #include <string>
+#include "ScriptEngine.h"
 
 extern "C" {
 #include "lua.h"
@@ -12,23 +13,18 @@ namespace SignE::Core::Scene {
 }
 
 namespace SignE::Core::Scripting {
-    class LuaScriptEngine {
+    class LuaScriptEngine : public ScriptEngine
+{
     public:
-        static void Init();
-        static void RunScript(const Scene::Entity& entity, const std::string& code);
-        static void RunInitFunction(const Scene::Entity& entity, const std::string& code);
-        static void RunUpdateFunction(const Scene::Entity& entity, const std::string& code);
-        static void Shutdown();
+    static void Shutdown();
 
         static bool IsPaused ();
         static void Pause (); 
         static void Resume ();
-    private:
+        static void CreateEntity(lua_State* L, const Scene::Entity& entity);
         static lua_State* luaState;
         static bool running;
-
-        static void CreateEntity(lua_State* L, const Scene::Entity& entity);
-    };
+};
 }
 
 #endif // !

@@ -18,6 +18,7 @@
 #include "Components.h"
 #include "Resources/Texture.h"
 #include "Scripting/LuaScriptEngine.h"
+#include "ScriptEngine.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
@@ -50,7 +51,7 @@ void Scene::OnUpdate(float dt)
         auto luaScriptFilter = ecsWorld.filter<LuaScript>();
         luaScriptFilter.each(
             [this](flecs::entity entity, LuaScript& luaScript) {
-                LuaScriptEngine::RunUpdateFunction({entity, this}, luaScript.code);
+                Scripting::ScriptEngine::RunUpdateFunction({entity, this}, luaScript.code);
             });
     }
 }
